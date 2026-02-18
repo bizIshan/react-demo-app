@@ -180,9 +180,9 @@ export default function HomeScreen() {
           </div>
           
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-            React Demo
+            Frontend Best Practices:
             <span className="block text-transparent bg-clip-text bg-linear-to-r from-yellow-200 to-pink-200">
-              Application
+              React Edition
             </span>
           </h1>
           
