@@ -159,12 +159,32 @@ function PropDrillingDemo() {
             <Code className="w-4 h-4" />
             <span>Every component needs props just to pass them down</span>
           </div>
-          <pre className="text-sm text-red-300 overflow-x-auto">
-{`<TopComponent user={user} theme={theme} onLogout={onLogout}>
-  <MiddleComponent user={user} theme={theme} onLogout={onLogout}>
-    <DeepChild user={user} theme={theme} onLogout={onLogout} />
-  </MiddleComponent>
-</TopComponent>`}</pre>
+          <div className="font-mono text-xs leading-relaxed overflow-x-auto space-y-0.5">
+            <p>
+              <span className="text-gray-500">&lt;</span><span className="text-yellow-300">TopComponent</span>
+              <span className="text-orange-300"> user</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">user</span><span className="text-gray-300">{'}'}</span>
+              <span className="text-orange-300"> theme</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">theme</span><span className="text-gray-300">{'}'}</span>
+              <span className="text-orange-300"> onLogout</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">onLogout</span><span className="text-gray-300">{'}'}&gt;</span>
+            </p>
+            <p className="pl-4">
+              <span className="text-gray-500">&lt;</span><span className="text-yellow-300">MiddleComponent</span>
+              <span className="text-orange-300"> user</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">user</span><span className="text-gray-300">{'}'}</span>
+              <span className="text-orange-300"> theme</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">theme</span><span className="text-gray-300">{'}'}</span>
+              <span className="text-orange-300"> onLogout</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">onLogout</span><span className="text-gray-300">{'}'}&gt;</span>
+            </p>
+            <p className="pl-8">
+              <span className="text-gray-500">&lt;</span><span className="text-yellow-300">DeepChild</span>
+              <span className="text-orange-300"> user</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">user</span><span className="text-gray-300">{'}'}</span>
+              <span className="text-orange-300"> theme</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">theme</span><span className="text-gray-300">{'}'}</span>
+              <span className="text-orange-300"> onLogout</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">onLogout</span><span className="text-gray-300">{'}'} /&gt;</span>
+            </p>
+            <p className="pl-4">
+              <span className="text-gray-500">&lt;/</span><span className="text-yellow-300">MiddleComponent</span><span className="text-gray-500">&gt;</span>
+            </p>
+            <p>
+              <span className="text-gray-500">&lt;/</span><span className="text-yellow-300">TopComponent</span><span className="text-gray-500">&gt;</span>
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -312,18 +332,31 @@ function ContextApiDemo() {
             <Code className="w-4 h-4" />
             <span>Middle components are clean - no props!</span>
           </div>
-          <pre className="text-sm text-green-300 overflow-x-auto">
-{`// DeepChild accesses context directly
-function DeepChild() {
-  const { user, logout } = useUser();
-  const theme = useTheme();
-  return <div>User: {user.name}</div>;
-}
-
-// Middle components are clean
-function MiddleComponent() {
-  return <DeepChild />;  // No props passed!
-}`}</pre>
+          <div className="font-mono text-xs leading-relaxed overflow-x-auto space-y-0.5">
+            <p><span className="text-gray-500">{'// DeepChild accesses context directly'}</span></p>
+            <p>
+              <span className="text-purple-400">function </span><span className="text-yellow-300">DeepChild</span><span className="text-gray-300">() {'{'}</span>
+            </p>
+            <p className="pl-4">
+              <span className="text-purple-400">const </span><span className="text-gray-300">{'{ '}</span><span className="text-orange-300">user</span><span className="text-gray-300">, </span><span className="text-orange-300">logout</span><span className="text-gray-300">{' }'} = </span><span className="text-yellow-300">useUser</span><span className="text-gray-300">();</span>
+            </p>
+            <p className="pl-4">
+              <span className="text-purple-400">const </span><span className="text-orange-300">theme</span><span className="text-gray-300"> = </span><span className="text-yellow-300">useTheme</span><span className="text-gray-300">();</span>
+            </p>
+            <p className="pl-4">
+              <span className="text-purple-400">return </span><span className="text-gray-500">&lt;</span><span className="text-yellow-300">div</span><span className="text-gray-500">&gt;</span><span className="text-gray-300">User: {'{'}</span><span className="text-orange-300">user</span><span className="text-gray-300">.name{'}'}</span><span className="text-gray-500">&lt;/</span><span className="text-yellow-300">div</span><span className="text-gray-500">&gt;</span><span className="text-gray-300">;</span>
+            </p>
+            <p><span className="text-gray-300">{'}'}</span></p>
+            <p className="mt-3"><span className="text-gray-500">{'// Middle components are clean — no props needed'}</span></p>
+            <p>
+              <span className="text-purple-400">function </span><span className="text-yellow-300">MiddleComponent</span><span className="text-gray-300">() {'{'}</span>
+            </p>
+            <p className="pl-4">
+              <span className="text-purple-400">return </span><span className="text-gray-500">&lt;</span><span className="text-yellow-300">DeepChild</span><span className="text-gray-300"> /&gt;;</span>
+              <span className="text-gray-500 ml-2">{'// No props passed!'}</span>
+            </p>
+            <p><span className="text-gray-300">{'}'}</span></p>
+          </div>
         </div>
       </div>
     </div>
@@ -400,7 +433,7 @@ function WhenToUse() {
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
             <div>
-              <p className="font-bold text-amber-800 mb-2">Context Gotchas:</p>
+              <p className="font-bold text-amber-800 mb-2">Common Pitfalls to Watch Out For:</p>
               <ul className="text-amber-700 text-sm space-y-1">
                 <li className="flex items-center gap-2">
                   <RefreshCw className="w-3 h-3" />
@@ -520,35 +553,64 @@ export default function ContextApiScreen() {
                 <h3 className="text-xl font-bold text-white">Context API Pattern</h3>
               </div>
             </div>
-            <div className="p-6 bg-gray-900">
-              <pre className="text-sm text-gray-200 overflow-x-auto">
-{`// 1. Create Context with default value
-const ThemeContext = createContext('light');
+            <div className="p-6 bg-gray-900 font-mono text-xs leading-relaxed overflow-x-auto space-y-0.5">
+              <p><span className="text-gray-500">{'// 1. Create Context with default value'}</span></p>
+              <p>
+                <span className="text-purple-400">const </span><span className="text-yellow-300">ThemeContext</span><span className="text-gray-300"> = </span><span className="text-yellow-300">createContext</span><span className="text-gray-300">(</span><span className="text-green-400">&apos;light&apos;</span><span className="text-gray-300">);</span>
+              </p>
 
-// 2. Create Provider component
-function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState('light');
-  const toggle = () => setTheme(t => t === 'light' ? 'dark' : 'light');
-  
-  return (
-    <ThemeContext.Provider value={{ theme, toggle }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-}
+              <p className="mt-3"><span className="text-gray-500">{'// 2. Create Provider component'}</span></p>
+              <p>
+                <span className="text-purple-400">function </span><span className="text-yellow-300">ThemeProvider</span><span className="text-gray-300">({'{ '}</span><span className="text-orange-300">children</span><span className="text-gray-300">{' }'}) {'{'}</span>
+              </p>
+              <p className="pl-4">
+                <span className="text-purple-400">const </span><span className="text-gray-300">[</span><span className="text-orange-300">theme</span><span className="text-gray-300">, </span><span className="text-orange-300">setTheme</span><span className="text-gray-300">] = </span><span className="text-yellow-300">useState</span><span className="text-gray-300">(</span><span className="text-green-400">&apos;light&apos;</span><span className="text-gray-300">);</span>
+              </p>
+              <p className="pl-4">
+                <span className="text-purple-400">const </span><span className="text-orange-300">toggle</span><span className="text-gray-300"> = () =&gt; </span><span className="text-orange-300">setTheme</span><span className="text-gray-300">(t =&gt; t === </span><span className="text-green-400">&apos;light&apos;</span><span className="text-gray-300"> ? </span><span className="text-green-400">&apos;dark&apos;</span><span className="text-gray-300"> : </span><span className="text-green-400">&apos;light&apos;</span><span className="text-gray-300">);</span>
+              </p>
+              <p className="pl-4 mt-2"><span className="text-purple-400">return </span><span className="text-gray-300">(</span></p>
+              <p className="pl-8">
+                <span className="text-gray-500">&lt;</span><span className="text-yellow-300">ThemeContext.Provider</span>
+                <span className="text-orange-300"> value</span><span className="text-gray-300">={'{{'}  </span><span className="text-blue-300">theme</span><span className="text-gray-300">, </span><span className="text-blue-300">toggle</span><span className="text-gray-300">  {'}}'}&gt;</span>
+              </p>
+              <p className="pl-12">
+                <span className="text-gray-300">{'{'}</span><span className="text-orange-300">children</span><span className="text-gray-300">{'}'}</span>
+              </p>
+              <p className="pl-8">
+                <span className="text-gray-500">&lt;/</span><span className="text-yellow-300">ThemeContext.Provider</span><span className="text-gray-500">&gt;</span>
+              </p>
+              <p className="pl-4"><span className="text-gray-300">);</span></p>
+              <p><span className="text-gray-300">{'}'}</span></p>
 
-// 3. Create custom hook for easy access
-function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context) throw new Error('useTheme must be within ThemeProvider');
-  return context;
-}
+              <p className="mt-3"><span className="text-gray-500">{'// 3. Create custom hook for easy access'}</span></p>
+              <p>
+                <span className="text-purple-400">function </span><span className="text-yellow-300">useTheme</span><span className="text-gray-300">() {'{'}</span>
+              </p>
+              <p className="pl-4">
+                <span className="text-purple-400">const </span><span className="text-orange-300">context</span><span className="text-gray-300"> = </span><span className="text-yellow-300">useContext</span><span className="text-gray-300">(</span><span className="text-yellow-300">ThemeContext</span><span className="text-gray-300">);</span>
+              </p>
+              <p className="pl-4">
+                <span className="text-purple-400">if </span><span className="text-gray-300">(!</span><span className="text-orange-300">context</span><span className="text-gray-300">) </span><span className="text-purple-400">throw new </span><span className="text-yellow-300">Error</span><span className="text-gray-300">(</span><span className="text-green-400">&apos;useTheme must be within ThemeProvider&apos;</span><span className="text-gray-300">);</span>
+              </p>
+              <p className="pl-4"><span className="text-purple-400">return </span><span className="text-orange-300">context</span><span className="text-gray-300">;</span></p>
+              <p><span className="text-gray-300">{'}'}</span></p>
 
-// 4. Use in any component
-function Button() {
-  const { theme, toggle } = useTheme();
-  return <button onClick={toggle}>Theme: {theme}</button>;
-}`}</pre>
+              <p className="mt-3"><span className="text-gray-500">{'// 4. Use in any component'}</span></p>
+              <p>
+                <span className="text-purple-400">function </span><span className="text-yellow-300">Button</span><span className="text-gray-300">() {'{'}</span>
+              </p>
+              <p className="pl-4">
+                <span className="text-purple-400">const </span><span className="text-gray-300">{'{ '}</span><span className="text-orange-300">theme</span><span className="text-gray-300">, </span><span className="text-orange-300">toggle</span><span className="text-gray-300">{' }'} = </span><span className="text-yellow-300">useTheme</span><span className="text-gray-300">();</span>
+              </p>
+              <p className="pl-4">
+                <span className="text-purple-400">return </span>
+                <span className="text-gray-500">&lt;</span><span className="text-yellow-300">button</span>
+                <span className="text-orange-300"> onClick</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">toggle</span><span className="text-gray-300">{'}'}</span><span className="text-gray-500">&gt;</span>
+                <span className="text-gray-300">Theme: {'{'}</span><span className="text-blue-300">theme</span><span className="text-gray-300">{'}'}</span>
+                <span className="text-gray-500">&lt;/</span><span className="text-yellow-300">button</span><span className="text-gray-500">&gt;</span><span className="text-gray-300">;</span>
+              </p>
+              <p><span className="text-gray-300">{'}'}</span></p>
             </div>
           </div>
 

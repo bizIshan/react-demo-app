@@ -18,7 +18,7 @@ import {
   Diff,
   Timer,
   Box,
-  XCircle
+  XCircle,
 } from 'lucide-react';
 import DemoNavigation from '../../components/DemoNavigation';
 
@@ -27,7 +27,10 @@ function ScreenHeader({ title, icon: Icon }) {
   return (
     <div className="sticky top-0 z-50 bg-white shadow-md">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-4">
-        <Link to="/" className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium text-gray-700 transition-colors">
+        <Link
+          to="/"
+          className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium text-gray-700 transition-colors"
+        >
           <ArrowLeft className="w-4 h-4" />
           Back
         </Link>
@@ -66,27 +69,31 @@ function RenderCounterDemo() {
   const [stateUpdates, setStateUpdates] = useState(0);
 
   const handleCountChange = (delta) => {
-    setCount(c => c + delta);
-    setStateUpdates(u => u + 1);
+    setCount((c) => c + delta);
+    setStateUpdates((u) => u + 1);
   };
 
   const handleTextChange = (e) => {
     setText(e.target.value);
-    setStateUpdates(u => u + 1);
+    setStateUpdates((u) => u + 1);
   };
 
   return (
     <div className="bg-gray-50 rounded-lg p-4">
       <div className="flex items-center justify-between mb-4">
-        <span className="text-sm text-gray-600">State updates (each triggers a re-render):</span>
+        <span className="text-sm text-gray-600">
+          State updates (each triggers a re-render):
+        </span>
         <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full font-bold">
           {stateUpdates} updates
         </span>
       </div>
-      
+
       <div className="space-y-3">
         <div>
-          <label className="text-sm text-gray-600 block mb-1">Change count (triggers re-render):</label>
+          <label className="text-sm text-gray-600 block mb-1">
+            Change count (triggers re-render):
+          </label>
           <div className="flex gap-2">
             <button
               onClick={() => handleCountChange(-1)}
@@ -94,7 +101,9 @@ function RenderCounterDemo() {
             >
               -
             </button>
-            <span className="px-4 py-2 bg-gray-200 rounded-lg font-mono">{count}</span>
+            <span className="px-4 py-2 bg-gray-200 rounded-lg font-mono">
+              {count}
+            </span>
             <button
               onClick={() => handleCountChange(1)}
               className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
@@ -103,9 +112,11 @@ function RenderCounterDemo() {
             </button>
           </div>
         </div>
-        
+
         <div>
-          <label className="text-sm text-gray-600 block mb-1">Type here (triggers re-render):</label>
+          <label className="text-sm text-gray-600 block mb-1">
+            Type here (triggers re-render):
+          </label>
           <input
             type="text"
             value={text}
@@ -115,7 +126,7 @@ function RenderCounterDemo() {
           />
         </div>
       </div>
-      
+
       <p className="text-xs text-gray-500 mt-3">
         Every state change causes a re-render. Watch the counter increase!
       </p>
@@ -137,19 +148,20 @@ function ParentChildDemo() {
           </span>
         </div>
         <button
-          onClick={() => setParentUpdates(c => c + 1)}
+          onClick={() => setParentUpdates((c) => c + 1)}
           className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
         >
           Update Parent State
         </button>
-        
+
         <div className="mt-4 ml-4 border-l-4 border-blue-300 pl-4">
           <ChildComponent parentUpdates={parentUpdates} />
         </div>
       </div>
-      
+
       <p className="text-xs text-gray-500">
-        When parent re-renders, children re-render too (unless optimized with memo).
+        When parent re-renders, children re-render too (unless optimized with
+        memo).
       </p>
     </div>
   );
@@ -164,7 +176,9 @@ function ChildComponent({ parentUpdates }) {
           Received: {parentUpdates} updates
         </span>
       </div>
-      <p className="text-sm text-green-700 mt-2">I re-render when my parent does!</p>
+      <p className="text-sm text-green-700 mt-2">
+        I re-render when my parent does!
+      </p>
     </div>
   );
 }
@@ -172,13 +186,22 @@ function ChildComponent({ parentUpdates }) {
 // Virtual DOM Visualization
 function VirtualDOMVisualization() {
   const [step, setStep] = useState(0);
-  
+
   const steps = [
-    { title: "Initial Render", desc: "React creates Virtual DOM tree from your components" },
-    { title: "State Changes", desc: "You call setState() or a prop changes" },
-    { title: "New Virtual DOM", desc: "React creates a new Virtual DOM tree" },
-    { title: "Diffing", desc: "React compares old vs new Virtual DOM (reconciliation)" },
-    { title: "Minimal Updates", desc: "Only changed nodes are updated in real DOM" },
+    {
+      title: 'Initial Render',
+      desc: 'React creates Virtual DOM tree from your components',
+    },
+    { title: 'State Changes', desc: 'You call setState() or a prop changes' },
+    { title: 'New Virtual DOM', desc: 'React creates a new Virtual DOM tree' },
+    {
+      title: 'Diffing',
+      desc: 'React compares old vs new Virtual DOM (reconciliation)',
+    },
+    {
+      title: 'Minimal Updates',
+      desc: 'Only changed nodes are updated in real DOM',
+    },
   ];
 
   return (
@@ -189,8 +212,8 @@ function VirtualDOMVisualization() {
             key={i}
             onClick={() => setStep(i)}
             className={`px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-all ${
-              step === i 
-                ? 'bg-indigo-500 text-white' 
+              step === i
+                ? 'bg-indigo-500 text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -198,11 +221,11 @@ function VirtualDOMVisualization() {
           </button>
         ))}
       </div>
-      
+
       <div className="bg-indigo-50 rounded-lg p-6 min-h-30">
         <h4 className="font-bold text-indigo-800 mb-2">{steps[step].title}</h4>
         <p className="text-indigo-700">{steps[step].desc}</p>
-        
+
         {step === 3 && (
           <div className="mt-4 flex items-center gap-4">
             <div className="bg-white p-3 rounded border-2 border-red-300">
@@ -222,14 +245,20 @@ function VirtualDOMVisualization() {
 // Code Example Component
 function CodeExample({ title, code, type = 'good' }) {
   return (
-    <div className={`rounded-lg overflow-hidden ${type === 'good' ? 'bg-green-900' : 'bg-red-900'}`}>
-      <div className={`px-4 py-2 flex items-center gap-2 ${type === 'good' ? 'bg-green-800' : 'bg-red-800'}`}>
+    <div
+      className={`rounded-lg overflow-hidden ${type === 'good' ? 'bg-green-900' : 'bg-red-900'}`}
+    >
+      <div
+        className={`px-4 py-2 flex items-center gap-2 ${type === 'good' ? 'bg-green-800' : 'bg-red-800'}`}
+      >
         {type === 'good' ? (
           <CheckCircle className="w-4 h-4 text-green-400" />
         ) : (
           <XCircle className="w-4 h-4 text-red-400" />
         )}
-        <span className={`text-sm font-medium ${type === 'good' ? 'text-green-200' : 'text-red-200'}`}>
+        <span
+          className={`text-sm font-medium ${type === 'good' ? 'text-green-200' : 'text-red-200'}`}
+        >
           {title}
         </span>
       </div>
@@ -253,10 +282,13 @@ export default function RenderingBasicsScreen() {
               <PlayCircle className="w-8 h-8" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold mb-2">Understanding React Rendering</h2>
+              <h2 className="text-2xl font-bold mb-2">
+                Understanding React Rendering
+              </h2>
               <p className="text-cyan-100 text-lg">
-                Before optimizing, you need to understand how React decides when and what to render.
-                This foundation is crucial for building performant applications.
+                Before optimizing, you need to understand how React decides when
+                and what to render. This foundation is crucial for building
+                performant applications.
               </p>
             </div>
           </div>
@@ -268,36 +300,54 @@ export default function RenderingBasicsScreen() {
             <RefreshCw className="w-7 h-7 text-cyan-500" />
             What is Rendering?
           </h2>
-          
+
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="font-bold text-lg text-gray-800 mb-4">Rendering = Calling Your Function</h3>
+              <h3 className="font-bold text-lg text-gray-800 mb-4">
+                Rendering = Calling Your Function
+              </h3>
               <p className="text-gray-600 mb-4">
-                In React, &quot;rendering&quot; means React is calling your component function to get the JSX 
-                that describes what should be on screen.
+                In React, &quot;rendering&quot; means React is calling your
+                component function to get the JSX that describes what should be
+                on screen.
               </p>
-              
+
               <div className="bg-gray-50 rounded-lg p-4">
                 <code className="text-sm text-gray-700">
-                  <span className="text-purple-600">function</span> <span className="text-blue-600">MyComponent</span>() &#123;<br />
-                  &nbsp;&nbsp;<span className="text-gray-500">// This code runs on every render</span><br />
-                  &nbsp;&nbsp;<span className="text-purple-600">return</span> &lt;<span className="text-green-600">div</span>&gt;Hello&lt;/<span className="text-green-600">div</span>&gt;;<br />
+                  <span className="text-purple-600">function</span>{' '}
+                  <span className="text-blue-600">MyComponent</span>() &#123;
+                  <br />
+                  &nbsp;&nbsp;
+                  <span className="text-gray-500">
+                    // This code runs on every render
+                  </span>
+                  <br />
+                  &nbsp;&nbsp;<span className="text-purple-600">
+                    return
+                  </span>{' '}
+                  &lt;<span className="text-green-600">div</span>&gt;Hello&lt;/
+                  <span className="text-green-600">div</span>&gt;;
+                  <br />
                   &#125;
                 </code>
               </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="font-bold text-lg text-gray-800 mb-4">Rendering ≠ DOM Update</h3>
+              <h3 className="font-bold text-lg text-gray-800 mb-4">
+                Rendering ≠ DOM Update
+              </h3>
               <p className="text-gray-600 mb-4">
-                Important! Rendering doesn&apos;t always mean the DOM changes. React compares the 
-                render output and only updates what&apos;s different.
+                Important! Rendering doesn&apos;t always mean the DOM changes.
+                React compares the render output and only updates what&apos;s
+                different.
               </p>
-              
+
               <div className="flex items-center gap-3 p-4 bg-amber-50 rounded-lg border border-amber-200">
                 <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
                 <p className="text-sm text-amber-800">
-                  A component can render many times without any visible change to the page.
+                  A component can render many times without any visible change
+                  to the page.
                 </p>
               </div>
             </div>
@@ -319,11 +369,16 @@ export default function RenderingBasicsScreen() {
                 </div>
                 <h4 className="font-bold text-blue-800 mb-2">State Changes</h4>
                 <p className="text-sm text-blue-600">
-                  Calling <code className="bg-blue-100 px-1 rounded">setState()</code> or 
-                  <code className="bg-blue-100 px-1 rounded">useState</code> setter
+                  Calling{' '}
+                  <code className="bg-blue-100 px-1 rounded">setState()</code>{' '}
+                  or
+                  <code className="bg-blue-100 px-1 rounded">
+                    useState
+                  </code>{' '}
+                  setter
                 </p>
               </div>
-              
+
               <div className="text-center p-4 bg-green-50 rounded-xl">
                 <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-white font-bold text-xl">2</span>
@@ -333,12 +388,14 @@ export default function RenderingBasicsScreen() {
                   Parent passes different props to the child component
                 </p>
               </div>
-              
+
               <div className="text-center p-4 bg-purple-50 rounded-xl">
                 <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-white font-bold text-xl">3</span>
                 </div>
-                <h4 className="font-bold text-purple-800 mb-2">Parent Re-renders</h4>
+                <h4 className="font-bold text-purple-800 mb-2">
+                  Parent Re-renders
+                </h4>
                 <p className="text-sm text-purple-600">
                   When parent renders, all children render by default
                 </p>
@@ -378,57 +435,77 @@ export default function RenderingBasicsScreen() {
           <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
-                <h3 className="font-bold text-lg text-gray-800 mb-3">What is the Virtual DOM?</h3>
+                <h3 className="font-bold text-lg text-gray-800 mb-3">
+                  What is the Virtual DOM?
+                </h3>
                 <p className="text-gray-600 mb-4">
-                  The Virtual DOM is a JavaScript representation of the real DOM. It&apos;s a lightweight 
-                  copy that React uses to determine what changes need to be made.
+                  The Virtual DOM is a JavaScript representation of the real
+                  DOM. It&apos;s a lightweight copy that React uses to determine
+                  what changes need to be made.
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-start gap-2">
                     <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
-                    <span className="text-gray-600">Faster than manipulating real DOM directly</span>
+                    <span className="text-gray-600">
+                      Faster than manipulating real DOM directly
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
-                    <span className="text-gray-600">Enables declarative UI updates</span>
+                    <span className="text-gray-600">
+                      Enables declarative UI updates
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
-                    <span className="text-gray-600">Batches multiple updates efficiently</span>
+                    <span className="text-gray-600">
+                      Batches multiple updates efficiently
+                    </span>
                   </li>
                 </ul>
               </div>
-              
+
               <div>
-                <h3 className="font-bold text-lg text-gray-800 mb-3">What is Reconciliation?</h3>
+                <h3 className="font-bold text-lg text-gray-800 mb-3">
+                  What is Reconciliation?
+                </h3>
                 <p className="text-gray-600 mb-4">
-                  Reconciliation is React&apos;s algorithm for comparing two Virtual DOM trees and 
-                  determining the minimum number of changes needed.
+                  Reconciliation is React&apos;s algorithm for comparing two
+                  Virtual DOM trees and determining the minimum number of
+                  changes needed.
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-start gap-2">
                     <Diff className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
-                    <span className="text-gray-600">Compares element types first</span>
+                    <span className="text-gray-600">
+                      Compares element types first
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Diff className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
-                    <span className="text-gray-600">Uses keys to track list items</span>
+                    <span className="text-gray-600">
+                      Uses keys to track list items
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Diff className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
-                    <span className="text-gray-600">Only updates changed attributes</span>
+                    <span className="text-gray-600">
+                      Only updates changed attributes
+                    </span>
                   </li>
                 </ul>
               </div>
             </div>
 
-            <h3 className="font-bold text-lg text-gray-800 mb-3">The Rendering Pipeline</h3>
+            <h3 className="font-bold text-lg text-gray-800 mb-3">
+              The Rendering Pipeline
+            </h3>
             <VirtualDOMVisualization />
           </div>
         </div>
 
         {/* Render Phases Section */}
-        <div className="mb-8">
+        {/* <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
             <Layers className="w-7 h-7 text-indigo-500" />
             The Two Phases of Rendering
@@ -501,7 +578,7 @@ export default function RenderingBasicsScreen() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Common Misconceptions */}
         <div className="mb-8">
@@ -516,15 +593,18 @@ export default function RenderingBasicsScreen() {
                 <XCircle className="w-6 h-6 text-red-500" />
                 <h3 className="font-bold text-red-800">Myth</h3>
               </div>
-              <p className="text-gray-700 mb-4">&quot;Every render causes a DOM update&quot;</p>
-              
+              <p className="text-gray-700 mb-4">
+                &quot;Every render causes a DOM update&quot;
+              </p>
+
               <div className="flex items-center gap-2 mb-4">
                 <CheckCircle className="w-6 h-6 text-green-500" />
                 <h3 className="font-bold text-green-800">Reality</h3>
               </div>
               <p className="text-gray-600">
-                React only updates the DOM when the render output is different from the previous render.
-                Many renders result in zero DOM changes.
+                React only updates the DOM when the render output is different
+                from the previous render. Many renders result in zero DOM
+                changes.
               </p>
             </div>
 
@@ -533,15 +613,18 @@ export default function RenderingBasicsScreen() {
                 <XCircle className="w-6 h-6 text-red-500" />
                 <h3 className="font-bold text-red-800">Myth</h3>
               </div>
-              <p className="text-gray-700 mb-4">&quot;Re-renders are always bad for performance&quot;</p>
-              
+              <p className="text-gray-700 mb-4">
+                &quot;Re-renders are always bad for performance&quot;
+              </p>
+
               <div className="flex items-center gap-2 mb-4">
                 <CheckCircle className="w-6 h-6 text-green-500" />
                 <h3 className="font-bold text-green-800">Reality</h3>
               </div>
               <p className="text-gray-600">
-                Re-renders are usually very fast! Only optimize when you measure an actual 
-                performance problem. Premature optimization often adds complexity without benefit.
+                Re-renders are usually very fast! Only optimize when you measure
+                an actual performance problem. Premature optimization often adds
+                complexity without benefit.
               </p>
             </div>
 
@@ -550,15 +633,17 @@ export default function RenderingBasicsScreen() {
                 <XCircle className="w-6 h-6 text-red-500" />
                 <h3 className="font-bold text-red-800">Myth</h3>
               </div>
-              <p className="text-gray-700 mb-4">&quot;useState causes the whole app to re-render&quot;</p>
-              
+              <p className="text-gray-700 mb-4">
+                &quot;useState causes the whole app to re-render&quot;
+              </p>
+
               <div className="flex items-center gap-2 mb-4">
                 <CheckCircle className="w-6 h-6 text-green-500" />
                 <h3 className="font-bold text-green-800">Reality</h3>
               </div>
               <p className="text-gray-600">
-                State updates only cause the component and its children to re-render. 
-                Parent and sibling components are not affected.
+                State updates only cause the component and its children to
+                re-render. Parent and sibling components are not affected.
               </p>
             </div>
 
@@ -567,15 +652,18 @@ export default function RenderingBasicsScreen() {
                 <XCircle className="w-6 h-6 text-red-500" />
                 <h3 className="font-bold text-red-800">Myth</h3>
               </div>
-              <p className="text-gray-700 mb-4">&quot;You should memo() everything to prevent re-renders&quot;</p>
-              
+              <p className="text-gray-700 mb-4">
+                &quot;You should memo() everything to prevent re-renders&quot;
+              </p>
+
               <div className="flex items-center gap-2 mb-4">
                 <CheckCircle className="w-6 h-6 text-green-500" />
                 <h3 className="font-bold text-green-800">Reality</h3>
               </div>
               <p className="text-gray-600">
-                memo() has its own cost. It needs to compare props on every render.
-                Only use it for components that render often with the same props.
+                memo() has its own cost. It needs to compare props on every
+                render. Only use it for components that render often with the
+                same props.
               </p>
             </div>
           </div>
@@ -616,7 +704,7 @@ function App() {
               type="good"
               code={`function ProductList({ products, filter }) {
   // Computed value - no state needed
-  const filtered = products.filter(p => 
+  const filtered = products.filter(p =>
     p.name.includes(filter)
   );
   return <ul>{filtered.map(...)}</ul>;
@@ -651,7 +739,8 @@ function App() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-cyan-200">•</span>
-                State changes, prop changes, and parent re-renders trigger renders
+                State changes, prop changes, and parent re-renders trigger
+                renders
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-cyan-200">•</span>

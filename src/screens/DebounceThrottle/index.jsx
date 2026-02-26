@@ -85,7 +85,7 @@ function useThrottle(value, interval) {
         setThrottledValue(value);
       },
       interval,
-      { leading: true, trailing: true }
+      { leading: false, trailing: true }
     );
 
     throttledSetter();
@@ -252,7 +252,7 @@ function VisualComparison() {
   const [throttleCount, setThrottleCount] = useState(0);
 
   const debouncedEvents = useDebounce(events.length, 500);
-  const throttledEvents = useThrottle(events.length, 500);
+  const throttledEvents = useThrottle(events.length, 2000);
 
   const prevDebounceRef = useRef(0);
   const prevThrottleRef = useRef(0);
@@ -351,7 +351,7 @@ function VisualComparison() {
             <div className="flex items-center justify-center gap-2 mb-2">
               <Waves className="w-5 h-5 text-green-600" />
               <p className="text-sm text-green-600 font-medium">
-                Throttled (500ms)
+                Throttled (2000ms)
               </p>
             </div>
             <p className="text-4xl font-bold text-green-700">{throttleCount}</p>
