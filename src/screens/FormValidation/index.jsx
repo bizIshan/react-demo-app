@@ -7,22 +7,21 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as yup from 'yup';
 import { z } from 'zod';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { 
-  ArrowLeft, 
-  FileText, 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  CheckCircle, 
-  XCircle, 
-  AlertTriangle, 
-  Lightbulb, 
-  Code, 
-  Zap, 
-  Shield, 
-  Settings, 
-  FileCheck, 
+import {
+  ArrowLeft,
+  FileText,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  Lightbulb,
+  Zap,
+  Shield,
+  Settings,
+  FileCheck,
   FileX,
   Send,
   RefreshCw,
@@ -30,16 +29,15 @@ import {
   X,
   RotateCcw,
   Loader2,
-  BookOpen,
   Package,
   Scale,
   ExternalLink,
-  User
+  User,
 } from 'lucide-react';
 
 // NPM Links for reference:
 // react-hook-form: https://www.npmjs.com/package/react-hook-form
-// yup: https://www.npmjs.com/package/yup  
+// yup: https://www.npmjs.com/package/yup
 // zod: https://www.npmjs.com/package/zod
 // formik: https://www.npmjs.com/package/formik
 
@@ -48,7 +46,10 @@ function ScreenHeader({ title, icon: Icon }) {
   return (
     <div className="sticky top-0 z-50 bg-white shadow-md">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-4">
-        <Link to="/" className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium text-gray-700 transition-colors">
+        <Link
+          to="/"
+          className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium text-gray-700 transition-colors"
+        >
           <ArrowLeft className="w-4 h-4" />
           Back
         </Link>
@@ -65,7 +66,11 @@ function ScreenHeader({ title, icon: Icon }) {
 // Manual Validation Demo
 // ========================================
 function ManualValidationForm() {
-  const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '' });
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [submitted, setSubmitted] = useState(false);
@@ -73,25 +78,25 @@ function ManualValidationForm() {
 
   const validate = (data) => {
     const newErrors = {};
-    
+
     if (!data.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(data.email)) {
       newErrors.email = 'Invalid email format';
     }
-    
+
     if (!data.password) {
       newErrors.password = 'Password is required';
     } else if (data.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters';
     }
-    
+
     if (!data.confirmPassword) {
       newErrors.confirmPassword = 'Please confirm password';
     } else if (data.password !== data.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    
+
     return newErrors;
   };
 
@@ -99,7 +104,7 @@ function ManualValidationForm() {
     const { name, value } = e.target;
     const newData = { ...formData, [name]: value };
     setFormData(newData);
-    
+
     if (touched[name]) {
       setErrors(validate(newData));
     }
@@ -116,7 +121,7 @@ function ManualValidationForm() {
     setTouched({ email: true, password: true, confirmPassword: true });
     const validationErrors = validate(formData);
     setErrors(validationErrors);
-    
+
     if (Object.keys(validationErrors).length === 0) {
       setSubmitted(true);
       console.log('Form submitted:', formData);
@@ -136,8 +141,13 @@ function ManualValidationForm() {
         <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
           <CheckCircle className="w-8 h-8 text-green-600" />
         </div>
-        <h3 className="text-xl font-bold text-green-600 mb-2">Form Submitted!</h3>
-        <button onClick={resetForm} className="flex items-center gap-2 mx-auto text-blue-600 hover:underline">
+        <h3 className="text-xl font-bold text-green-600 mb-2">
+          Form Submitted!
+        </h3>
+        <button
+          onClick={resetForm}
+          className="flex items-center gap-2 mx-auto text-blue-600 hover:underline"
+        >
           <RotateCcw className="w-4 h-4" />
           Reset Form
         </button>
@@ -159,7 +169,9 @@ function ManualValidationForm() {
           onChange={handleChange}
           onBlur={handleBlur}
           className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-300 transition-colors ${
-            errors.email && touched.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
+            errors.email && touched.email
+              ? 'border-red-500 bg-red-50'
+              : 'border-gray-300'
           }`}
           placeholder="you@example.com"
         />
@@ -184,7 +196,9 @@ function ManualValidationForm() {
             onChange={handleChange}
             onBlur={handleBlur}
             className={`w-full px-4 py-2.5 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-300 transition-colors ${
-              errors.password && touched.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
+              errors.password && touched.password
+                ? 'border-red-500 bg-red-50'
+                : 'border-gray-300'
             }`}
             placeholder="••••••••"
           />
@@ -193,7 +207,11 @@ function ManualValidationForm() {
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
           >
-            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {showPassword ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4" />
+            )}
           </button>
         </div>
         {errors.password && touched.password && (
@@ -216,7 +234,9 @@ function ManualValidationForm() {
           onChange={handleChange}
           onBlur={handleBlur}
           className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-300 transition-colors ${
-            errors.confirmPassword && touched.confirmPassword ? 'border-red-500 bg-red-50' : 'border-gray-300'
+            errors.confirmPassword && touched.confirmPassword
+              ? 'border-red-500 bg-red-50'
+              : 'border-gray-300'
           }`}
           placeholder="••••••••"
         />
@@ -242,40 +262,51 @@ function ManualValidationForm() {
 // ========================================
 // React Hook Form + Yup Demo
 // ========================================
-const schema = yup.object({
-  email: yup.string().email('Invalid email format').required('Email is required'),
-  password: yup
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .matches(/[A-Z]/, 'Must contain uppercase letter')
-    .matches(/[0-9]/, 'Must contain a number')
-    .required('Password is required'),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref('password')], 'Passwords must match')
-    .required('Please confirm password'),
-  acceptTerms: yup.boolean().oneOf([true], 'You must accept the terms')
-}).required();
+const schema = yup
+  .object({
+    email: yup
+      .string()
+      .email('Invalid email format')
+      .required('Email is required'),
+    password: yup
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .matches(/[A-Z]/, 'Must contain uppercase letter')
+      .matches(/[0-9]/, 'Must contain a number')
+      .required('Password is required'),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref('password')], 'Passwords must match')
+      .required('Please confirm password'),
+    acceptTerms: yup.boolean().oneOf([true], 'You must accept the terms'),
+  })
+  .required();
 
 function ReactHookFormDemo() {
   const [submitted, setSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
     watch,
     reset,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
-    mode: 'onBlur'
+    mode: 'onBlur',
   });
 
   const password = watch('password', '');
 
   const getPasswordStrength = (pwd) => {
-    if (!pwd) return { score: 0, label: 'None', color: 'bg-gray-200', textColor: 'text-gray-400' };
+    if (!pwd)
+      return {
+        score: 0,
+        label: 'None',
+        color: 'bg-gray-200',
+        textColor: 'text-gray-400',
+      };
     let score = 0;
     if (pwd.length >= 8) score++;
     if (pwd.length >= 12) score++;
@@ -283,10 +314,27 @@ function ReactHookFormDemo() {
     if (/[a-z]/.test(pwd)) score++;
     if (/[0-9]/.test(pwd)) score++;
     if (/[^A-Za-z0-9]/.test(pwd)) score++;
-    
-    if (score <= 2) return { score, label: 'Weak', color: 'bg-red-500', textColor: 'text-red-500' };
-    if (score <= 4) return { score, label: 'Medium', color: 'bg-yellow-500', textColor: 'text-yellow-500' };
-    return { score, label: 'Strong', color: 'bg-green-500', textColor: 'text-green-500' };
+
+    if (score <= 2)
+      return {
+        score,
+        label: 'Weak',
+        color: 'bg-red-500',
+        textColor: 'text-red-500',
+      };
+    if (score <= 4)
+      return {
+        score,
+        label: 'Medium',
+        color: 'bg-yellow-500',
+        textColor: 'text-yellow-500',
+      };
+    return {
+      score,
+      label: 'Strong',
+      color: 'bg-green-500',
+      textColor: 'text-green-500',
+    };
   };
 
   const strength = getPasswordStrength(password);
@@ -296,11 +344,11 @@ function ReactHookFormDemo() {
     { met: /[A-Z]/.test(password), text: 'Uppercase letter' },
     { met: /[a-z]/.test(password), text: 'Lowercase letter' },
     { met: /[0-9]/.test(password), text: 'Number' },
-    { met: /[^A-Za-z0-9]/.test(password), text: 'Special character' }
+    { met: /[^A-Za-z0-9]/.test(password), text: 'Special character' },
   ];
 
   const onSubmit = async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API
     console.log('Form submitted:', data);
     setSubmitted(true);
   };
@@ -311,8 +359,16 @@ function ReactHookFormDemo() {
         <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
           <CheckCircle className="w-8 h-8 text-green-600" />
         </div>
-        <h3 className="text-xl font-bold text-green-600 mb-2">Form Submitted!</h3>
-        <button onClick={() => { reset(); setSubmitted(false); }} className="flex items-center gap-2 mx-auto text-green-600 hover:underline">
+        <h3 className="text-xl font-bold text-green-600 mb-2">
+          Form Submitted!
+        </h3>
+        <button
+          onClick={() => {
+            reset();
+            setSubmitted(false);
+          }}
+          className="flex items-center gap-2 mx-auto text-green-600 hover:underline"
+        >
           <RotateCcw className="w-4 h-4" />
           Reset Form
         </button>
@@ -362,14 +418,18 @@ function ReactHookFormDemo() {
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
           >
-            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {showPassword ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4" />
+            )}
           </button>
         </div>
         {password && (
           <div className="mt-3 space-y-2">
             <div className="flex items-center gap-2">
               <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div 
+                <div
                   className={`h-full ${strength.color} transition-all duration-300`}
                   style={{ width: `${(strength.score / 6) * 100}%` }}
                 />
@@ -380,13 +440,19 @@ function ReactHookFormDemo() {
             </div>
             <div className="flex flex-wrap gap-2">
               {requirements.map((req, i) => (
-                <span 
-                  key={i} 
+                <span
+                  key={i}
                   className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 ${
-                    req.met ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                    req.met
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-gray-100 text-gray-500'
                   }`}
                 >
-                  {req.met ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  {req.met ? (
+                    <Check className="w-3 h-3" />
+                  ) : (
+                    <X className="w-3 h-3" />
+                  )}
                   {req.text}
                 </span>
               ))}
@@ -410,7 +476,9 @@ function ReactHookFormDemo() {
           {...register('confirmPassword')}
           type="password"
           className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-green-300 transition-colors ${
-            errors.confirmPassword ? 'border-red-500 bg-red-50' : 'border-gray-300'
+            errors.confirmPassword
+              ? 'border-red-500 bg-red-50'
+              : 'border-gray-300'
           }`}
           placeholder="••••••••"
         />
@@ -467,26 +535,32 @@ function ReactHookFormDemo() {
 
 // Zod schema definition (type-safe & smaller bundle)
 const zodSchema = z.object({
-  username: z.string().min(3, 'Username must be at least 3 characters').max(20, 'Max 20 characters'),
+  username: z
+    .string()
+    .min(3, 'Username must be at least 3 characters')
+    .max(20, 'Max 20 characters'),
   email: z.string().email('Invalid email format'),
-  age: z.number({ invalid_type_error: 'Age must be a number' }).min(18, 'Must be 18+').max(100, 'Max 100')
+  age: z
+    .number({ invalid_type_error: 'Age must be a number' })
+    .min(18, 'Must be 18+')
+    .max(100, 'Max 100'),
 });
 
 function ZodFormDemo() {
   const [submitted, setSubmitted] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(zodSchema),
-    mode: 'onBlur'
+    mode: 'onBlur',
   });
 
   const onSubmit = async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise((resolve) => setTimeout(resolve, 800));
     console.log('Zod form submitted:', data);
     setSubmitted(true);
   };
@@ -497,8 +571,16 @@ function ZodFormDemo() {
         <div className="w-16 h-16 mx-auto bg-purple-100 rounded-full flex items-center justify-center mb-4">
           <CheckCircle className="w-8 h-8 text-purple-600" />
         </div>
-        <h3 className="text-xl font-bold text-purple-600 mb-2">Form Submitted!</h3>
-        <button onClick={() => { reset(); setSubmitted(false); }} className="flex items-center gap-2 mx-auto text-purple-600 hover:underline">
+        <h3 className="text-xl font-bold text-purple-600 mb-2">
+          Form Submitted!
+        </h3>
+        <button
+          onClick={() => {
+            reset();
+            setSubmitted(false);
+          }}
+          className="flex items-center gap-2 mx-auto text-purple-600 hover:underline"
+        >
           <RotateCcw className="w-4 h-4" />
           Reset Form
         </button>
@@ -625,8 +707,13 @@ function FormikDemo() {
         <div className="w-16 h-16 mx-auto bg-orange-100 rounded-full flex items-center justify-center mb-4">
           <CheckCircle className="w-8 h-8 text-orange-600" />
         </div>
-        <h3 className="text-xl font-bold text-orange-600 mb-2">Form Submitted!</h3>
-        <button onClick={() => setSubmitted(false)} className="flex items-center gap-2 mx-auto text-orange-600 hover:underline">
+        <h3 className="text-xl font-bold text-orange-600 mb-2">
+          Form Submitted!
+        </h3>
+        <button
+          onClick={() => setSubmitted(false)}
+          className="flex items-center gap-2 mx-auto text-orange-600 hover:underline"
+        >
           <RotateCcw className="w-4 h-4" />
           Reset Form
         </button>
@@ -639,7 +726,7 @@ function FormikDemo() {
       initialValues={{ name: '', email: '', message: '' }}
       validate={formikValidate}
       onSubmit={async (values, { setSubmitting, resetForm }) => {
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await new Promise((resolve) => setTimeout(resolve, 800));
         console.log('Formik form submitted:', values);
         setSubmitting(false);
         resetForm();
@@ -657,11 +744,17 @@ function FormikDemo() {
               name="name"
               type="text"
               className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-orange-300 transition-colors ${
-                errors.name && touched.name ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                errors.name && touched.name
+                  ? 'border-red-500 bg-red-50'
+                  : 'border-gray-300'
               }`}
               placeholder="John Doe"
             />
-            <ErrorMessage name="name" component="p" className="flex items-center gap-1 text-red-500 text-sm mt-1" />
+            <ErrorMessage
+              name="name"
+              component="p"
+              className="flex items-center gap-1 text-red-500 text-sm mt-1"
+            />
           </div>
 
           <div>
@@ -673,11 +766,17 @@ function FormikDemo() {
               name="email"
               type="email"
               className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-orange-300 transition-colors ${
-                errors.email && touched.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                errors.email && touched.email
+                  ? 'border-red-500 bg-red-50'
+                  : 'border-gray-300'
               }`}
               placeholder="you@example.com"
             />
-            <ErrorMessage name="email" component="p" className="flex items-center gap-1 text-red-500 text-sm mt-1" />
+            <ErrorMessage
+              name="email"
+              component="p"
+              className="flex items-center gap-1 text-red-500 text-sm mt-1"
+            />
           </div>
 
           <div>
@@ -690,11 +789,17 @@ function FormikDemo() {
               name="message"
               rows={3}
               className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-orange-300 transition-colors ${
-                errors.message && touched.message ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                errors.message && touched.message
+                  ? 'border-red-500 bg-red-50'
+                  : 'border-gray-300'
               }`}
               placeholder="Your message here..."
             />
-            <ErrorMessage name="message" component="p" className="flex items-center gap-1 text-red-500 text-sm mt-1" />
+            <ErrorMessage
+              name="message"
+              component="p"
+              className="flex items-center gap-1 text-red-500 text-sm mt-1"
+            />
           </div>
 
           <button
@@ -726,11 +831,31 @@ function FormikDemo() {
 
 function KeyTakeaways() {
   const takeaways = [
-    { icon: Settings, text: 'Manual validation gives full control but requires more code', color: 'text-blue-500' },
-    { icon: Zap, text: 'React Hook Form minimizes re-renders for better performance', color: 'text-green-500' },
-    { icon: Shield, text: 'Yup/Zod provide type-safe schema validation', color: 'text-purple-500' },
-    { icon: AlertTriangle, text: 'Formik is great for forms that require complex state management', color: 'text-orange-500' },
-    { icon: CheckCircle, text: 'Show errors on blur, not while typing (better UX)', color: 'text-teal-500' }
+    {
+      icon: Settings,
+      text: 'Manual validation gives full control but requires more code',
+      color: 'text-blue-500',
+    },
+    {
+      icon: Zap,
+      text: 'React Hook Form minimizes re-renders for better performance',
+      color: 'text-green-500',
+    },
+    {
+      icon: Shield,
+      text: 'Yup/Zod provide type-safe schema validation',
+      color: 'text-purple-500',
+    },
+    {
+      icon: AlertTriangle,
+      text: 'Formik is great for forms that require complex state management',
+      color: 'text-orange-500',
+    },
+    {
+      icon: CheckCircle,
+      text: 'Show errors on blur, not while typing (better UX)',
+      color: 'text-teal-500',
+    },
   ];
 
   return (
@@ -745,7 +870,10 @@ function KeyTakeaways() {
       <div className="p-6">
         <div className="space-y-3">
           {takeaways.map((item, index) => (
-            <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <div
+              key={index}
+              className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            >
               <item.icon className={`w-5 h-5 ${item.color}`} />
               <span className="text-gray-700">{item.text}</span>
             </div>
@@ -760,7 +888,7 @@ export default function FormValidationScreen() {
   return (
     <div className="min-h-screen bg-gray-100">
       <ScreenHeader title="Form Validation Patterns" icon={FileText} />
-      
+
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Hero Section */}
         <div className="bg-linear-to-r from-green-500 to-teal-500 rounded-xl p-6 mb-8 text-white">
@@ -769,10 +897,13 @@ export default function FormValidationScreen() {
               <FileCheck className="w-8 h-8" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold mb-2">Form Validation Approaches</h2>
+              <h2 className="text-2xl font-bold mb-2">
+                Form Validation Approaches
+              </h2>
               <p className="text-green-100 leading-relaxed">
-                Compare different validation approaches: Manual, React Hook Form + Yup/Zod, and Formik.
-                Each has its strengths depending on your use case and form complexity.
+                Compare different validation approaches: Manual, React Hook Form
+                + Yup/Zod, and Formik. Each has its strengths depending on your
+                use case and form complexity.
               </p>
             </div>
           </div>
@@ -809,10 +940,26 @@ export default function FormValidationScreen() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { name: 'react-hook-form', url: 'https://www.npmjs.com/package/react-hook-form', color: 'bg-green-100 text-green-700' },
-              { name: 'yup', url: 'https://www.npmjs.com/package/yup', color: 'bg-yellow-100 text-yellow-700' },
-              { name: 'zod', url: 'https://www.npmjs.com/package/zod', color: 'bg-purple-100 text-purple-700' },
-              { name: 'formik', url: 'https://www.npmjs.com/package/formik', color: 'bg-orange-100 text-orange-700' }
+              {
+                name: 'react-hook-form',
+                url: 'https://www.npmjs.com/package/react-hook-form',
+                color: 'bg-green-100 text-green-700',
+              },
+              {
+                name: 'yup',
+                url: 'https://www.npmjs.com/package/yup',
+                color: 'bg-yellow-100 text-yellow-700',
+              },
+              {
+                name: 'zod',
+                url: 'https://www.npmjs.com/package/zod',
+                color: 'bg-purple-100 text-purple-700',
+              },
+              {
+                name: 'formik',
+                url: 'https://www.npmjs.com/package/formik',
+                color: 'bg-orange-100 text-orange-700',
+              },
             ].map((pkg) => (
               <a
                 key={pkg.name}
@@ -829,12 +976,14 @@ export default function FormValidationScreen() {
         </div>
 
         {/* Row 1: Manual + React Hook Form + Yup */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
+        <div className="space-y-8 mb-8">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="bg-blue-500 px-6 py-4">
               <div className="flex items-center gap-3">
                 <Settings className="w-6 h-6 text-white" />
-                <h3 className="text-xl font-bold text-white">Manual Validation</h3>
+                <h3 className="text-xl font-bold text-white">
+                  Manual Validation
+                </h3>
               </div>
             </div>
             <div className="p-6">
@@ -842,12 +991,132 @@ export default function FormValidationScreen() {
                 <div className="flex items-start gap-3">
                   <Lightbulb className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                   <div className="text-blue-800 text-sm">
-                    <p><strong>Pros:</strong> Full control, no dependencies</p>
-                    <p><strong>Cons:</strong> More boilerplate, error-prone</p>
+                    <p>
+                      <strong>Pros:</strong> Full control, no dependencies
+                    </p>
+                    <p>
+                      <strong>Cons:</strong> More boilerplate, error-prone
+                    </p>
                   </div>
                 </div>
               </div>
               <ManualValidationForm />
+
+              {/* Code snippet */}
+              <div className="mt-6 bg-gray-900 rounded-lg p-4 font-mono text-xs leading-relaxed overflow-x-auto">
+                <p className="text-gray-500 mb-2">{'// 1. State setup'}</p>
+                <p>
+                  <span className="text-purple-400">const </span>
+                  <span className="text-gray-300">[</span>
+                  <span className="text-orange-300">errors</span>
+                  <span className="text-gray-300">, </span>
+                  <span className="text-orange-300">setErrors</span>
+                  <span className="text-gray-300">] = </span>
+                  <span className="text-yellow-300">useState</span>
+                  <span className="text-gray-300">({'{}'});</span>
+                </p>
+                <p>
+                  <span className="text-purple-400">const </span>
+                  <span className="text-gray-300">[</span>
+                  <span className="text-orange-300">touched</span>
+                  <span className="text-gray-300">, </span>
+                  <span className="text-orange-300">setTouched</span>
+                  <span className="text-gray-300">] = </span>
+                  <span className="text-yellow-300">useState</span>
+                  <span className="text-gray-300">({'{}'});</span>
+                </p>
+
+                <p className="mt-3 text-gray-500">
+                  {'// 2. Validate function'}
+                </p>
+                <p>
+                  <span className="text-purple-400">const </span>
+                  <span className="text-yellow-300">validate</span>
+                  <span className="text-gray-300"> = (</span>
+                  <span className="text-orange-300">data</span>
+                  <span className="text-gray-300">) =&gt; {'{'}</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-purple-400">const </span>
+                  <span className="text-orange-300">errs</span>
+                  <span className="text-gray-300"> = {};</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-purple-400">if </span>
+                  <span className="text-gray-300">(!</span>
+                  <span className="text-orange-300">data</span>
+                  <span className="text-gray-300">.email) </span>
+                  <span className="text-orange-300">errs</span>
+                  <span className="text-gray-300">.email = </span>
+                  <span className="text-green-400">'Required'</span>
+                  <span className="text-gray-300">;</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-purple-400">return </span>
+                  <span className="text-orange-300">errs</span>
+                  <span className="text-gray-300">;</span>
+                </p>
+                <p>
+                  <span className="text-gray-300">{'}'};</span>
+                </p>
+
+                <p className="mt-3 text-gray-500">
+                  {'// 3. Validate on blur, show error'}
+                </p>
+                <p>
+                  <span className="text-purple-400">const </span>
+                  <span className="text-yellow-300">handleBlur</span>
+                  <span className="text-gray-300"> = (</span>
+                  <span className="text-orange-300">e</span>
+                  <span className="text-gray-300">) =&gt; {'{'}</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-yellow-300">setTouched</span>
+                  <span className="text-gray-300">({'{'} ...</span>
+                  <span className="text-orange-300">touched</span>
+                  <span className="text-gray-300">, [</span>
+                  <span className="text-orange-300">e</span>
+                  <span className="text-gray-300">.target.name]: </span>
+                  <span className="text-blue-400">true</span>
+                  <span className="text-gray-300"> {'}'});</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-yellow-300">setErrors</span>
+                  <span className="text-gray-300">(</span>
+                  <span className="text-yellow-300">validate</span>
+                  <span className="text-gray-300">(</span>
+                  <span className="text-orange-300">formData</span>
+                  <span className="text-gray-300">));</span>
+                </p>
+                <p>
+                  <span className="text-gray-300">{'}'};</span>
+                </p>
+
+                <p className="mt-3 text-gray-500">
+                  {'// 4. Show error in JSX'}
+                </p>
+                <p>
+                  <span className="text-gray-300">{'{'}</span>
+                  <span className="text-orange-300">errors</span>
+                  <span className="text-gray-300">.email &amp;&amp; </span>
+                  <span className="text-orange-300">touched</span>
+                  <span className="text-gray-300">.email &amp;&amp; (</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-gray-500">&lt;</span>
+                  <span className="text-yellow-300">p</span>
+                  <span className="text-gray-500">&gt;</span>
+                  <span className="text-gray-300">{'{'}</span>
+                  <span className="text-orange-300">errors</span>
+                  <span className="text-gray-300">.email{'}'}</span>
+                  <span className="text-gray-500">&lt;/</span>
+                  <span className="text-yellow-300">p</span>
+                  <span className="text-gray-500">&gt;</span>
+                </p>
+                <p>
+                  <span className="text-gray-300">){'}'}</span>
+                </p>
+              </div>
             </div>
           </div>
 
@@ -856,7 +1125,9 @@ export default function FormValidationScreen() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Zap className="w-6 h-6 text-white" />
-                  <h3 className="text-xl font-bold text-white">React Hook Form + Yup</h3>
+                  <h3 className="text-xl font-bold text-white">
+                    React Hook Form + Yup
+                  </h3>
                 </div>
               </div>
             </div>
@@ -865,24 +1136,140 @@ export default function FormValidationScreen() {
                 <div className="flex items-start gap-3">
                   <Lightbulb className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
                   <div className="text-green-800 text-sm">
-                    <p><strong>Pros:</strong> Less code, better performance, schema validation</p>
-                    <p><strong>Cons:</strong> Extra dependencies</p>
+                    <p>
+                      <strong>Pros:</strong> Less code, better performance,
+                      schema validation
+                    </p>
+                    <p>
+                      <strong>Cons:</strong> Extra dependencies
+                    </p>
                   </div>
                 </div>
               </div>
               <ReactHookFormDemo />
+
+              {/* Code snippet */}
+              <div className="mt-6 bg-gray-900 rounded-lg p-4 font-mono text-xs leading-relaxed overflow-x-auto">
+                <p className="text-gray-500 mb-2">
+                  {'// 1. Define Yup schema'}
+                </p>
+                <p>
+                  <span className="text-purple-400">const </span>
+                  <span className="text-yellow-300">schema</span>
+                  <span className="text-gray-300"> = </span>
+                  <span className="text-yellow-300">yup</span>
+                  <span className="text-gray-300">.object({'{'}</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-orange-300">email</span>
+                  <span className="text-gray-300">: </span>
+                  <span className="text-yellow-300">yup</span>
+                  <span className="text-gray-300">.string().</span>
+                  <span className="text-yellow-300">email</span>
+                  <span className="text-gray-300">(</span>
+                  <span className="text-green-400">'Invalid'</span>
+                  <span className="text-gray-300">).</span>
+                  <span className="text-yellow-300">required</span>
+                  <span className="text-gray-300">(),</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-orange-300">password</span>
+                  <span className="text-gray-300">: </span>
+                  <span className="text-yellow-300">yup</span>
+                  <span className="text-gray-300">.string().</span>
+                  <span className="text-yellow-300">min</span>
+                  <span className="text-gray-300">(</span>
+                  <span className="text-blue-400">8</span>
+                  <span className="text-gray-300">).</span>
+                  <span className="text-yellow-300">matches</span>
+                  <span className="text-gray-300">(</span>
+                  <span className="text-red-400">/[A-Z]/</span>
+                  <span className="text-gray-300">).</span>
+                  <span className="text-yellow-300">required</span>
+                  <span className="text-gray-300">(),</span>
+                </p>
+                <p>
+                  <span className="text-gray-300">{'}'});</span>
+                </p>
+
+                <p className="mt-3 text-gray-500">{'// 2. Wire up useForm'}</p>
+                <p>
+                  <span className="text-purple-400">const </span>
+                  <span className="text-gray-300">{'{ '}</span>
+                  <span className="text-orange-300">register</span>
+                  <span className="text-gray-300">, </span>
+                  <span className="text-orange-300">handleSubmit</span>
+                  <span className="text-gray-300">, </span>
+                  <span className="text-orange-300">formState</span>
+                  <span className="text-gray-300">: {'{ '}</span>
+                  <span className="text-orange-300">errors</span>
+                  <span className="text-gray-300">
+                    {' }'} {'}'} ={' '}
+                  </span>
+                  <span className="text-yellow-300">useForm</span>
+                  <span className="text-gray-300">({'{'}</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-orange-300">resolver</span>
+                  <span className="text-gray-300">: </span>
+                  <span className="text-yellow-300">yupResolver</span>
+                  <span className="text-gray-300">(</span>
+                  <span className="text-orange-300">schema</span>
+                  <span className="text-gray-300">),</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-orange-300">mode</span>
+                  <span className="text-gray-300">: </span>
+                  <span className="text-green-400">'onBlur'</span>
+                </p>
+                <p>
+                  <span className="text-gray-300">{'}'});</span>
+                </p>
+
+                <p className="mt-3 text-gray-500">
+                  {'// 3. Register fields (no onChange needed!)'}
+                </p>
+                <p>
+                  <span className="text-gray-500">&lt;</span>
+                  <span className="text-yellow-300">input</span>
+                  <span className="text-gray-300"> </span>
+                  <span className="text-gray-300">{'{'}</span>
+                  <span className="text-gray-300">...</span>
+                  <span className="text-yellow-300">register</span>
+                  <span className="text-gray-300">(</span>
+                  <span className="text-green-400">'email'</span>
+                  <span className="text-gray-300">){'}'} /&gt;</span>
+                </p>
+                <p>
+                  <span className="text-gray-300">{'{'}</span>
+                  <span className="text-orange-300">errors</span>
+                  <span className="text-gray-300">.email &amp;&amp; </span>
+                  <span className="text-gray-500">&lt;</span>
+                  <span className="text-yellow-300">p</span>
+                  <span className="text-gray-500">&gt;</span>
+                  <span className="text-gray-300">{'{'}</span>
+                  <span className="text-orange-300">errors</span>
+                  <span className="text-gray-300">.email.message{'}'}</span>
+                  <span className="text-gray-500">&lt;/</span>
+                  <span className="text-yellow-300">p</span>
+                  <span className="text-gray-500">&gt;</span>
+                  <span className="text-gray-300">{'}'}</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Row 2: Zod + Formik */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
+        <div className="space-y-8 mb-8">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="bg-purple-500 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Shield className="w-6 h-6 text-white" />
-                  <h3 className="text-xl font-bold text-white">React Hook Form + Zod</h3>
+                  <h3 className="text-xl font-bold text-white">
+                    React Hook Form + Zod
+                  </h3>
                 </div>
               </div>
             </div>
@@ -891,12 +1278,136 @@ export default function FormValidationScreen() {
                 <div className="flex items-start gap-3">
                   <Lightbulb className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
                   <div className="text-purple-800 text-sm">
-                    <p><strong>Pros:</strong> TypeScript-first, smaller bundle, type inference</p>
-                    <p><strong>Cons:</strong> Less ecosystem than Yup</p>
+                    <p>
+                      <strong>Pros:</strong> TypeScript-first, smaller bundle,
+                      type inference
+                    </p>
+                    <p>
+                      <strong>Cons:</strong> Less ecosystem than Yup
+                    </p>
                   </div>
                 </div>
               </div>
               <ZodFormDemo />
+
+              {/* Code snippet */}
+              <div className="mt-6 bg-gray-900 rounded-lg p-4 font-mono text-xs leading-relaxed overflow-x-auto">
+                <p className="text-gray-500 mb-2">
+                  {'// 1. Define Zod schema (TypeScript-first)'}
+                </p>
+                <p>
+                  <span className="text-purple-400">const </span>
+                  <span className="text-yellow-300">schema</span>
+                  <span className="text-gray-300"> = </span>
+                  <span className="text-yellow-300">z</span>
+                  <span className="text-gray-300">.object({'{'}</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-orange-300">username</span>
+                  <span className="text-gray-300">: </span>
+                  <span className="text-yellow-300">z</span>
+                  <span className="text-gray-300">.string().</span>
+                  <span className="text-yellow-300">min</span>
+                  <span className="text-gray-300">(</span>
+                  <span className="text-blue-400">3</span>
+                  <span className="text-gray-300">).</span>
+                  <span className="text-yellow-300">max</span>
+                  <span className="text-gray-300">(</span>
+                  <span className="text-blue-400">20</span>
+                  <span className="text-gray-300">),</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-orange-300">email</span>
+                  <span className="text-gray-300">: </span>
+                  <span className="text-yellow-300">z</span>
+                  <span className="text-gray-300">.string().</span>
+                  <span className="text-yellow-300">email</span>
+                  <span className="text-gray-300">(</span>
+                  <span className="text-green-400">'Invalid email'</span>
+                  <span className="text-gray-300">),</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-orange-300">age</span>
+                  <span className="text-gray-300">: </span>
+                  <span className="text-yellow-300">z</span>
+                  <span className="text-gray-300">.number().</span>
+                  <span className="text-yellow-300">min</span>
+                  <span className="text-gray-300">(</span>
+                  <span className="text-blue-400">18</span>
+                  <span className="text-gray-300">, </span>
+                  <span className="text-green-400">'Must be 18+'</span>
+                  <span className="text-gray-300">),</span>
+                </p>
+                <p>
+                  <span className="text-gray-300">{'}'});</span>
+                </p>
+
+                <p className="mt-3 text-gray-500">
+                  {'// 2. Infer type from schema (TypeScript bonus)'}
+                </p>
+                <p>
+                  <span className="text-purple-400">type </span>
+                  <span className="text-yellow-300">FormData</span>
+                  <span className="text-gray-300"> = </span>
+                  <span className="text-yellow-300">z</span>
+                  <span className="text-gray-300">.infer&lt;</span>
+                  <span className="text-purple-400">typeof </span>
+                  <span className="text-orange-300">schema</span>
+                  <span className="text-gray-300">&gt;;</span>
+                </p>
+
+                <p className="mt-3 text-gray-500">
+                  {'// 3. Wire up with zodResolver'}
+                </p>
+                <p>
+                  <span className="text-purple-400">const </span>
+                  <span className="text-gray-300">{'{ '}</span>
+                  <span className="text-orange-300">register</span>
+                  <span className="text-gray-300">, </span>
+                  <span className="text-orange-300">handleSubmit</span>
+                  <span className="text-gray-300">, </span>
+                  <span className="text-orange-300">formState</span>
+                  <span className="text-gray-300">: {'{ '}</span>
+                  <span className="text-orange-300">errors</span>
+                  <span className="text-gray-300">
+                    {' }'} {'}'} ={' '}
+                  </span>
+                  <span className="text-yellow-300">useForm</span>
+                  <span className="text-gray-300">({'{'}</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-orange-300">resolver</span>
+                  <span className="text-gray-300">: </span>
+                  <span className="text-yellow-300">zodResolver</span>
+                  <span className="text-gray-300">(</span>
+                  <span className="text-orange-300">schema</span>
+                  <span className="text-gray-300">)</span>
+                </p>
+                <p>
+                  <span className="text-gray-300">{'}'});</span>
+                </p>
+
+                <p className="mt-3 text-gray-500">
+                  {'// 4. valueAsNumber for number fields'}
+                </p>
+                <p>
+                  <span className="text-gray-500">&lt;</span>
+                  <span className="text-yellow-300">input</span>
+                  <span className="text-gray-300"> </span>
+                  <span className="text-gray-300">{'{'}</span>
+                  <span className="text-gray-300">...</span>
+                  <span className="text-yellow-300">register</span>
+                  <span className="text-gray-300">(</span>
+                  <span className="text-green-400">'age'</span>
+                  <span className="text-gray-300">, {'{ '}</span>
+                  <span className="text-orange-300">valueAsNumber</span>
+                  <span className="text-gray-300">: </span>
+                  <span className="text-blue-400">true</span>
+                  <span className="text-gray-300">
+                    {' }'}){'}'} /&gt;
+                  </span>
+                </p>
+              </div>
             </div>
           </div>
 
@@ -914,84 +1425,123 @@ export default function FormValidationScreen() {
                 <div className="flex items-start gap-3">
                   <Lightbulb className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
                   <div className="text-orange-800 text-sm">
-                    <p><strong>Pros:</strong> Full form state management, built-in validation</p>
-                    <p><strong>Cons:</strong> More re-renders than Hook Form</p>
+                    <p>
+                      <strong>Pros:</strong> Full form state management,
+                      built-in validation
+                    </p>
+                    <p>
+                      <strong>Cons:</strong> More re-renders than Hook Form
+                    </p>
                   </div>
                 </div>
               </div>
               <FormikDemo />
-            </div>
-          </div>
-        </div>
 
-        {/* Code Examples */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
-          {/* Yup Example */}
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div className="bg-gray-800 px-6 py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Code className="w-6 h-6 text-yellow-400" />
-                  <h3 className="text-lg font-bold text-white">Yup Schema</h3>
-                </div>
-                <a 
-                  href="https://www.npmjs.com/package/yup" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300"
-                >
-                  <ExternalLink className="w-3 h-3" />
-                  npm
-                </a>
+              {/* Code snippet */}
+              <div className="mt-6 bg-gray-900 rounded-lg p-4 font-mono text-xs leading-relaxed overflow-x-auto">
+                <p className="text-gray-500 mb-2">
+                  {'// 1. Validate function (returns error object)'}
+                </p>
+                <p>
+                  <span className="text-purple-400">const </span>
+                  <span className="text-yellow-300">validate</span>
+                  <span className="text-gray-300"> = (</span>
+                  <span className="text-orange-300">values</span>
+                  <span className="text-gray-300">) =&gt; {'{'}</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-purple-400">const </span>
+                  <span className="text-orange-300">errors</span>
+                  <span className="text-gray-300"> = {};</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-purple-400">if </span>
+                  <span className="text-gray-300">(!</span>
+                  <span className="text-orange-300">values</span>
+                  <span className="text-gray-300">.email) </span>
+                  <span className="text-orange-300">errors</span>
+                  <span className="text-gray-300">.email = </span>
+                  <span className="text-green-400">'Required'</span>
+                  <span className="text-gray-300">;</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-purple-400">return </span>
+                  <span className="text-orange-300">errors</span>
+                  <span className="text-gray-300">;</span>
+                </p>
+                <p>
+                  <span className="text-gray-300">{'}'};</span>
+                </p>
+
+                <p className="mt-3 text-gray-500">
+                  {'// 2. Formik component wraps the whole form'}
+                </p>
+                <p>
+                  <span className="text-gray-500">&lt;</span>
+                  <span className="text-yellow-300">Formik</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-orange-300">initialValues</span>
+                  <span className="text-gray-300">
+                    ={'{'}
+                    {'{'}{' '}
+                  </span>
+                  <span className="text-blue-300">email</span>
+                  <span className="text-gray-300">: </span>
+                  <span className="text-green-400">''</span>
+                  <span className="text-gray-300">, </span>
+                  <span className="text-blue-300">name</span>
+                  <span className="text-gray-300">: </span>
+                  <span className="text-green-400">''</span>
+                  <span className="text-gray-300">
+                    {' '}
+                    {'}'}
+                    {'}'}
+                  </span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-orange-300">validate</span>
+                  <span className="text-gray-300">={'{'}</span>
+                  <span className="text-orange-300">validate</span>
+                  <span className="text-gray-300">{'}'}</span>
+                </p>
+                <p className="pl-4">
+                  <span className="text-orange-300">onSubmit</span>
+                  <span className="text-gray-300">={'{'}</span>
+                  <span className="text-orange-300">handleSubmit</span>
+                  <span className="text-gray-300">{'}'}</span>
+                </p>
+                <p>
+                  <span className="text-gray-500">&gt;</span>
+                </p>
+
+                <p className="mt-3 text-gray-500">
+                  {'// 3. Field & ErrorMessage — no register() needed'}
+                </p>
+                <p>
+                  <span className="text-gray-500">&lt;</span>
+                  <span className="text-yellow-300">Field</span>
+                  <span className="text-orange-300"> name</span>
+                  <span className="text-gray-300">=</span>
+                  <span className="text-green-400">'email'</span>
+                  <span className="text-gray-300"> </span>
+                  <span className="text-orange-300">type</span>
+                  <span className="text-gray-300">=</span>
+                  <span className="text-green-400">'email'</span>
+                  <span className="text-gray-500"> /&gt;</span>
+                </p>
+                <p>
+                  <span className="text-gray-500">&lt;</span>
+                  <span className="text-yellow-300">ErrorMessage</span>
+                  <span className="text-orange-300"> name</span>
+                  <span className="text-gray-300">=</span>
+                  <span className="text-green-400">'email'</span>
+                  <span className="text-orange-300"> component</span>
+                  <span className="text-gray-300">=</span>
+                  <span className="text-green-400">'p'</span>
+                  <span className="text-gray-500"> /&gt;</span>
+                </p>
               </div>
-            </div>
-            <div className="p-4 bg-gray-900">
-              <pre className="text-xs text-gray-200 overflow-x-auto">
-{`import * as yup from 'yup';
-
-const schema = yup.object({
-  email: yup.string()
-    .email('Invalid email')
-    .required('Required'),
-  password: yup.string()
-    .min(8, 'Min 8 characters')
-    .matches(/[A-Z]/, 'Needs uppercase')
-    .required('Required'),
-});`}</pre>
-            </div>
-          </div>
-
-          {/* Zod Example */}
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div className="bg-gray-800 px-6 py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Code className="w-6 h-6 text-purple-400" />
-                  <h3 className="text-lg font-bold text-white">Zod Schema</h3>
-                </div>
-                <a 
-                  href="https://www.npmjs.com/package/zod" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300"
-                >
-                  <ExternalLink className="w-3 h-3" />
-                  npm
-                </a>
-              </div>
-            </div>
-            <div className="p-4 bg-gray-900">
-              <pre className="text-xs text-gray-200 overflow-x-auto">
-{`import { z } from 'zod';
-
-const schema = z.object({
-  email: z.string()
-    .email('Invalid email'),
-  password: z.string()
-    .min(8, 'Min 8 characters')
-    .regex(/[A-Z]/, 'Needs uppercase'),
-  age: z.number().min(18, 'Must be 18+')
-});`}</pre>
             </div>
           </div>
         </div>
@@ -1001,7 +1551,9 @@ const schema = z.object({
           <div className="bg-linear-to-r from-indigo-500 to-purple-500 px-6 py-4">
             <div className="flex items-center gap-3">
               <Scale className="w-6 h-6 text-white" />
-              <h3 className="text-xl font-bold text-white">When to Use What?</h3>
+              <h3 className="text-xl font-bold text-white">
+                When to Use What?
+              </h3>
             </div>
           </div>
           <div className="p-6">
@@ -1020,7 +1572,9 @@ const schema = z.object({
               <div className="border-2 border-green-200 rounded-lg p-4 bg-green-50/50">
                 <div className="flex items-center gap-2 mb-3">
                   <Zap className="w-5 h-5 text-green-600" />
-                  <h4 className="font-bold text-green-700 text-sm">Hook Form + Yup</h4>
+                  <h4 className="font-bold text-green-700 text-sm">
+                    Hook Form + Yup
+                  </h4>
                 </div>
                 <ul className="space-y-2 text-sm text-gray-600">
                   <li>• Complex forms</li>
@@ -1031,7 +1585,9 @@ const schema = z.object({
               <div className="border-2 border-purple-200 rounded-lg p-4 bg-purple-50/50">
                 <div className="flex items-center gap-2 mb-3">
                   <Shield className="w-5 h-5 text-purple-600" />
-                  <h4 className="font-bold text-purple-700 text-sm">Hook Form + Zod</h4>
+                  <h4 className="font-bold text-purple-700 text-sm">
+                    Hook Form + Zod
+                  </h4>
                 </div>
                 <ul className="space-y-2 text-sm text-gray-600">
                   <li>• TypeScript projects</li>

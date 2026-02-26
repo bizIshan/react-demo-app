@@ -35,7 +35,7 @@ import {
   Zap,
   RefreshCw,
   AlertTriangle,
-  Info
+  Info,
 } from 'lucide-react';
 
 // ============================================
@@ -73,7 +73,7 @@ function ScreenHeader({ title, icon: Icon }) {
 // #1 - useToggle
 function useToggle(initialValue = false) {
   const [value, setValue] = useState(initialValue);
-  const toggle = useCallback(() => setValue(v => !v), []);
+  const toggle = useCallback(() => setValue((v) => !v), []);
   const setTrue = useCallback(() => setValue(true), []);
   const setFalse = useCallback(() => setValue(false), []);
   return [value, toggle, setTrue, setFalse];
@@ -139,19 +139,19 @@ function useArray(initialArray = []) {
   const [array, setArray] = useState(initialArray);
 
   const push = useCallback((element) => {
-    setArray(a => [...a, element]);
+    setArray((a) => [...a, element]);
   }, []);
 
   const filter = useCallback((callback) => {
-    setArray(a => a.filter(callback));
+    setArray((a) => a.filter(callback));
   }, []);
 
   const update = useCallback((index, newElement) => {
-    setArray(a => a.map((el, i) => (i === index ? newElement : el)));
+    setArray((a) => a.map((el, i) => (i === index ? newElement : el)));
   }, []);
 
   const remove = useCallback((index) => {
-    setArray(a => a.filter((_, i) => i !== index));
+    setArray((a) => a.filter((_, i) => i !== index));
   }, []);
 
   const clear = useCallback(() => setArray([]), []);
@@ -178,20 +178,23 @@ function useStateWithHistory(initialValue, capacity = 10) {
   const historyRef = useRef([initialValue]);
   const pointerRef = useRef(0);
 
-  const set = useCallback((v) => {
-    const resolvedValue = typeof v === 'function' ? v(value) : v;
-    if (historyRef.current[pointerRef.current] !== resolvedValue) {
-      if (pointerRef.current < historyRef.current.length - 1) {
-        historyRef.current.splice(pointerRef.current + 1);
+  const set = useCallback(
+    (v) => {
+      const resolvedValue = typeof v === 'function' ? v(value) : v;
+      if (historyRef.current[pointerRef.current] !== resolvedValue) {
+        if (pointerRef.current < historyRef.current.length - 1) {
+          historyRef.current.splice(pointerRef.current + 1);
+        }
+        historyRef.current.push(resolvedValue);
+        while (historyRef.current.length > capacity) {
+          historyRef.current.shift();
+        }
+        pointerRef.current = historyRef.current.length - 1;
       }
-      historyRef.current.push(resolvedValue);
-      while (historyRef.current.length > capacity) {
-        historyRef.current.shift();
-      }
-      pointerRef.current = historyRef.current.length - 1;
-    }
-    setValue(resolvedValue);
-  }, [capacity, value]);
+      setValue(resolvedValue);
+    },
+    [capacity, value]
+  );
 
   const back = useCallback(() => {
     if (pointerRef.current <= 0) return;
@@ -225,7 +228,7 @@ function useStateWithHistory(initialValue, capacity = 10) {
 // #8 - useStorage (localStorage/sessionStorage)
 function useStorage(key, initialValue, storageType = 'local') {
   const storage = storageType === 'local' ? localStorage : sessionStorage;
-  
+
   const [value, setValue] = useState(() => {
     try {
       const item = storage.getItem(key);
@@ -235,15 +238,19 @@ function useStorage(key, initialValue, storageType = 'local') {
     }
   });
 
-  const setStoredValue = useCallback((newValue) => {
-    try {
-      const valueToStore = typeof newValue === 'function' ? newValue(value) : newValue;
-      setValue(valueToStore);
-      storage.setItem(key, JSON.stringify(valueToStore));
-    } catch (error) {
-      console.error('useStorage error:', error);
-    }
-  }, [key, storage, value]);
+  const setStoredValue = useCallback(
+    (newValue) => {
+      try {
+        const valueToStore =
+          typeof newValue === 'function' ? newValue(value) : newValue;
+        setValue(valueToStore);
+        storage.setItem(key, JSON.stringify(valueToStore));
+      } catch (error) {
+        console.error('useStorage error:', error);
+      }
+    },
+    [key, storage, value]
+  );
 
   const remove = useCallback(() => {
     try {
@@ -265,17 +272,20 @@ function useAsync(asyncFunction, immediate = true) {
     data: null,
   });
 
-  const execute = useCallback(async (...args) => {
-    setState({ loading: true, error: null, data: null });
-    try {
-      const data = await asyncFunction(...args);
-      setState({ loading: false, error: null, data });
-      return data;
-    } catch (error) {
-      setState({ loading: false, error, data: null });
-      throw error;
-    }
-  }, [asyncFunction]);
+  const execute = useCallback(
+    async (...args) => {
+      setState({ loading: true, error: null, data: null });
+      try {
+        const data = await asyncFunction(...args);
+        setState({ loading: false, error: null, data });
+        return data;
+      } catch (error) {
+        setState({ loading: false, error, data: null });
+        throw error;
+      }
+    },
+    [asyncFunction]
+  );
 
   useEffect(() => {
     if (immediate) {
@@ -294,12 +304,16 @@ function useFetch(url, options = {}) {
 
   useEffect(() => {
     const controller = new AbortController();
-    
+
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(url, { ...options, signal: controller.signal });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const response = await fetch(url, {
+          ...options,
+          signal: controller.signal,
+        });
+        if (!response.ok)
+          throw new Error(`HTTP error! status: ${response.status}`);
         const json = await response.json();
         setData(json);
         setError(null);
@@ -374,7 +388,7 @@ function useDeepCompareEffect(callback, dependencies) {
     const keysA = Object.keys(a);
     const keysB = Object.keys(b);
     if (keysA.length !== keysB.length) return false;
-    return keysA.every(key => deepEqual(a[key], b[key]));
+    return keysA.every((key) => deepEqual(a[key], b[key]));
   };
 
   if (!deepEqual(previousRef.current, dependencies)) {
@@ -399,7 +413,8 @@ function useEventListener(eventName, handler, element = window, options) {
     const listener = (event) => savedHandler.current(event);
     targetElement.addEventListener(eventName, listener, options);
 
-    return () => targetElement.removeEventListener(eventName, listener, options);
+    return () =>
+      targetElement.removeEventListener(eventName, listener, options);
   }, [eventName, element, options]);
 }
 
@@ -444,15 +459,17 @@ function useWindowSize() {
 
 // #16 - useMediaQuery
 function useMediaQuery(query) {
-  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
+  const [matches, setMatches] = useState(
+    () => window.matchMedia(query).matches
+  );
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(query);
     const handler = (e) => setMatches(e.matches);
-    
+
     mediaQuery.addEventListener('change', handler);
     setMatches(mediaQuery.matches);
-    
+
     return () => mediaQuery.removeEventListener('change', handler);
   }, [query]);
 
@@ -491,11 +508,19 @@ function useGeolocation(options = {}) {
     };
 
     const errorHandler = (error) => {
-      setState(prev => ({ ...prev, loading: false, error }));
+      setState((prev) => ({ ...prev, loading: false, error }));
     };
 
-    navigator.geolocation.getCurrentPosition(successHandler, errorHandler, options);
-    const watchId = navigator.geolocation.watchPosition(successHandler, errorHandler, options);
+    navigator.geolocation.getCurrentPosition(
+      successHandler,
+      errorHandler,
+      options
+    );
+    const watchId = navigator.geolocation.watchPosition(
+      successHandler,
+      errorHandler,
+      options
+    );
 
     return () => navigator.geolocation.clearWatch(watchId);
   }, []);
@@ -508,11 +533,15 @@ function useStateWithValidation(validationFunc, initialValue) {
   const [value, setValue] = useState(initialValue);
   const [isValid, setIsValid] = useState(() => validationFunc(initialValue));
 
-  const onChange = useCallback((nextValue) => {
-    const newValue = typeof nextValue === 'function' ? nextValue(value) : nextValue;
-    setValue(newValue);
-    setIsValid(validationFunc(newValue));
-  }, [validationFunc, value]);
+  const onChange = useCallback(
+    (nextValue) => {
+      const newValue =
+        typeof nextValue === 'function' ? nextValue(value) : nextValue;
+      setValue(newValue);
+      setIsValid(validationFunc(newValue));
+    },
+    [validationFunc, value]
+  );
 
   return [value, onChange, isValid];
 }
@@ -572,7 +601,7 @@ function useDarkMode() {
   const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
   const [darkMode, setDarkMode] = useStorage('dark-mode', prefersDark);
 
-  const toggle = useCallback(() => setDarkMode(prev => !prev), [setDarkMode]);
+  const toggle = useCallback(() => setDarkMode((prev) => !prev), [setDarkMode]);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
@@ -607,7 +636,7 @@ function useCookie(name, defaultValue) {
   const getCookie = useCallback(() => {
     const cookies = document.cookie.split(';');
     for (const cookie of cookies) {
-      const [cookieName, cookieValue] = cookie.split('=').map(c => c.trim());
+      const [cookieName, cookieValue] = cookie.split('=').map((c) => c.trim());
       if (cookieName === name) {
         return decodeURIComponent(cookieValue);
       }
@@ -617,12 +646,15 @@ function useCookie(name, defaultValue) {
 
   const [value, setValue] = useState(getCookie);
 
-  const setCookie = useCallback((newValue, options = {}) => {
-    const { days = 7, path = '/' } = options;
-    const expires = new Date(Date.now() + days * 864e5).toUTCString();
-    document.cookie = `${name}=${encodeURIComponent(newValue)}; expires=${expires}; path=${path}`;
-    setValue(newValue);
-  }, [name]);
+  const setCookie = useCallback(
+    (newValue, options = {}) => {
+      const { days = 7, path = '/' } = options;
+      const expires = new Date(Date.now() + days * 864e5).toUTCString();
+      document.cookie = `${name}=${encodeURIComponent(newValue)}; expires=${expires}; path=${path}`;
+      setValue(newValue);
+    },
+    [name]
+  );
 
   const deleteCookie = useCallback(() => {
     document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
@@ -643,10 +675,13 @@ const translations = {
 
 function useTranslation(initialLang = 'en') {
   const [language, setLanguage] = useState(initialLang);
-  
-  const t = useCallback((key) => {
-    return translations[language]?.[key] || key;
-  }, [language]);
+
+  const t = useCallback(
+    (key) => {
+      return translations[language]?.[key] || key;
+    },
+    [language]
+  );
 
   return { t, language, setLanguage, languages: Object.keys(translations) };
 }
@@ -739,30 +774,36 @@ function useLongPress(callback, options = {}) {
   const isLongPressActive = useRef(false);
   const isPressed = useRef(false);
 
-  const start = useCallback((event) => {
-    if (isPressed.current) return;
-    isPressed.current = true;
-    onStart?.(event);
+  const start = useCallback(
+    (event) => {
+      if (isPressed.current) return;
+      isPressed.current = true;
+      onStart?.(event);
 
-    timerRef.current = setTimeout(() => {
-      isLongPressActive.current = true;
-      callback(event);
-      onFinish?.(event);
-    }, threshold);
-  }, [callback, threshold, onStart, onFinish]);
+      timerRef.current = setTimeout(() => {
+        isLongPressActive.current = true;
+        callback(event);
+        onFinish?.(event);
+      }, threshold);
+    },
+    [callback, threshold, onStart, onFinish]
+  );
 
-  const cancel = useCallback((event) => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-    if (isLongPressActive.current) {
-      isLongPressActive.current = false;
-    } else if (isPressed.current) {
-      onCancel?.(event);
-    }
-    isPressed.current = false;
-  }, [onCancel]);
+  const cancel = useCallback(
+    (event) => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      if (isLongPressActive.current) {
+        isLongPressActive.current = false;
+      } else if (isPressed.current) {
+        onCancel?.(event);
+      }
+      isPressed.current = false;
+    },
+    [onCancel]
+  );
 
   return {
     onMouseDown: start,
@@ -780,7 +821,7 @@ function useLongPress(callback, options = {}) {
 // Demo 1: useToggle
 function UseToggleDemo() {
   const [isOn, toggle, setOn, setOff] = useToggle(false);
-  
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
@@ -788,14 +829,33 @@ function UseToggleDemo() {
           onClick={toggle}
           className={`p-3 rounded-xl transition-all ${isOn ? 'bg-green-500' : 'bg-gray-300'}`}
         >
-          {isOn ? <ToggleRight className="w-8 h-8 text-white" /> : <ToggleLeft className="w-8 h-8 text-gray-600" />}
+          {isOn ? (
+            <ToggleRight className="w-8 h-8 text-white" />
+          ) : (
+            <ToggleLeft className="w-8 h-8 text-gray-600" />
+          )}
         </button>
         <span className="text-lg font-medium">{isOn ? 'ON' : 'OFF'}</span>
       </div>
       <div className="flex gap-2">
-        <button onClick={setOn} className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm">Set ON</button>
-        <button onClick={setOff} className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm">Set OFF</button>
-        <button onClick={toggle} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm">Toggle</button>
+        <button
+          onClick={setOn}
+          className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm"
+        >
+          Set ON
+        </button>
+        <button
+          onClick={setOff}
+          className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm"
+        >
+          Set OFF
+        </button>
+        <button
+          onClick={toggle}
+          className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm"
+        >
+          Toggle
+        </button>
       </div>
     </div>
   );
@@ -803,18 +863,60 @@ function UseToggleDemo() {
 
 // Demo 2: useTimeout
 function UseTimeoutDemo() {
-  const [message, setMessage] = useState('');
-  const { reset, clear } = useTimeout(() => setMessage('Timeout completed!'), 3000);
+  const [status, setStatus] = useState('running'); // hook auto-starts on mount
+
+  const { reset, clear } = useTimeout(() => setStatus('done'), 3000);
+
+  const handleReset = () => {
+    setStatus('running');
+    reset();
+  };
+
+  const handleClear = () => {
+    setStatus('cleared');
+    clear();
+  };
+
+  const statusConfig = {
+    running: {
+      text: 'Timer running… (3s)',
+      color: 'text-blue-600',
+      bg: 'bg-blue-50',
+    },
+    done: {
+      text: '✓ Timeout completed!',
+      color: 'text-green-600',
+      bg: 'bg-green-50',
+    },
+    cleared: {
+      text: '✕ Timer cleared before firing',
+      color: 'text-red-600',
+      bg: 'bg-red-50',
+    },
+  };
+
+  const cfg = statusConfig[status];
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Clock className="w-6 h-6 text-blue-500" />
-        <span className="text-lg">3 second timer: {message || 'Waiting...'}</span>
+      <div className={`flex items-center gap-3 p-3 rounded-lg ${cfg.bg}`}>
+        <Clock className={`w-5 h-5 shrink-0 ${cfg.color}`} />
+        <span className={`font-medium ${cfg.color}`}>{cfg.text}</span>
       </div>
-      <div className="flex gap-2">
-        <button onClick={reset} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm">Reset Timer</button>
-        <button onClick={clear} className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm">Clear Timer</button>
+      <div className="flex gap-2 flex-wrap">
+        <button
+          onClick={handleReset}
+          className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm"
+        >
+          Reset Timer
+        </button>
+        <button
+          onClick={handleClear}
+          disabled={status !== 'running'}
+          className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm disabled:opacity-40"
+        >
+          Clear Timer
+        </button>
       </div>
     </div>
   );
@@ -831,7 +933,10 @@ function UseDebounceDemo() {
       <input
         type="text"
         value={text}
-        onChange={(e) => { setText(e.target.value); setKeystrokes(k => k + 1); }}
+        onChange={(e) => {
+          setText(e.target.value);
+          setKeystrokes((k) => k + 1);
+        }}
         placeholder="Type something..."
         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
       />
@@ -842,7 +947,9 @@ function UseDebounceDemo() {
         </div>
         <div className="bg-purple-50 p-3 rounded-lg">
           <span className="text-gray-500">Debounced (500ms):</span>
-          <span className="ml-2 font-mono font-bold text-purple-600">{debouncedText || '—'}</span>
+          <span className="ml-2 font-mono font-bold text-purple-600">
+            {debouncedText || '—'}
+          </span>
         </div>
       </div>
     </div>
@@ -855,21 +962,23 @@ function UseUpdateEffectDemo() {
   const [updateCount, setUpdateCount] = useState(0);
 
   useUpdateEffect(() => {
-    setUpdateCount(c => c + 1);
+    setUpdateCount((c) => c + 1);
   }, [count]);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
         <button
-          onClick={() => setCount(c => c + 1)}
+          onClick={() => setCount((c) => c + 1)}
           className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition"
         >
           Increment: {count}
         </button>
       </div>
       <div className="bg-purple-50 p-3 rounded-lg">
-        <span className="text-gray-600">Effect triggered (skips initial): </span>
+        <span className="text-gray-600">
+          Effect triggered (skips initial):{' '}
+        </span>
         <span className="font-bold text-purple-600">{updateCount} times</span>
       </div>
     </div>
@@ -885,17 +994,48 @@ function UseArrayDemo() {
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
         {array.map((item, index) => (
-          <div key={index} className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-lg">
+          <div
+            key={index}
+            className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-lg"
+          >
             <span className="font-mono">{item}</span>
-            <button onClick={() => update(index, item + 10)} className="text-blue-500 hover:text-blue-700">+10</button>
-            <button onClick={() => remove(index)} className="text-red-500 hover:text-red-700">×</button>
+            <button
+              onClick={() => update(index, item + 10)}
+              className="text-blue-500 hover:text-blue-700"
+            >
+              +10
+            </button>
+            <button
+              onClick={() => remove(index)}
+              className="text-red-500 hover:text-red-700"
+            >
+              ×
+            </button>
           </div>
         ))}
       </div>
       <div className="flex flex-wrap gap-2">
-        <button onClick={() => { push(nextValue); setNextValue(v => v + 1); }} className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm">Push {nextValue}</button>
-        <button onClick={() => filter(n => n > 5)} className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-sm">Filter &gt; 5</button>
-        <button onClick={clear} className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm">Clear</button>
+        <button
+          onClick={() => {
+            push(nextValue);
+            setNextValue((v) => v + 1);
+          }}
+          className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm"
+        >
+          Push {nextValue}
+        </button>
+        <button
+          onClick={() => filter((n) => n > 5)}
+          className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-sm"
+        >
+          Filter &gt; 5
+        </button>
+        <button
+          onClick={clear}
+          className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm"
+        >
+          Clear
+        </button>
       </div>
     </div>
   );
@@ -909,7 +1049,7 @@ function UsePreviousDemo() {
   return (
     <div className="space-y-4">
       <button
-        onClick={() => setCount(c => c + 1)}
+        onClick={() => setCount((c) => c + 1)}
         className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition"
       >
         Increment
@@ -917,7 +1057,9 @@ function UsePreviousDemo() {
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-gray-50 p-3 rounded-lg">
           <div className="text-gray-500 text-sm">Previous</div>
-          <div className="text-2xl font-bold text-gray-400">{previous ?? '—'}</div>
+          <div className="text-2xl font-bold text-gray-400">
+            {previous ?? '—'}
+          </div>
         </div>
         <div className="bg-indigo-50 p-3 rounded-lg">
           <div className="text-gray-500 text-sm">Current</div>
@@ -930,25 +1072,41 @@ function UsePreviousDemo() {
 
 // Demo 7: useStateWithHistory
 function UseStateWithHistoryDemo() {
-  const { value, set, back, forward, history, pointer } = useStateWithHistory(0);
+  const { value, set, back, forward, history, pointer } =
+    useStateWithHistory(0);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
-        <button onClick={back} className="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
+        <button
+          onClick={back}
+          className="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300"
+        >
+          ← Back
+        </button>
         <input
           type="number"
           value={value}
           onChange={(e) => set(parseInt(e.target.value) || 0)}
           className="w-24 p-2 border rounded-lg text-center font-mono text-xl"
         />
-        <button onClick={forward} className="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300">Forward →</button>
+        <button
+          onClick={forward}
+          className="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300"
+        >
+          Forward →
+        </button>
       </div>
       <div className="bg-gray-50 p-3 rounded-lg">
-        <div className="text-sm text-gray-500 mb-1">History (pointer: {pointer}):</div>
+        <div className="text-sm text-gray-500 mb-1">
+          History (pointer: {pointer}):
+        </div>
         <div className="flex gap-2 flex-wrap">
           {history.map((h, i) => (
-            <span key={i} className={`px-2 py-1 rounded text-sm ${i === pointer ? 'bg-purple-500 text-white' : 'bg-gray-200'}`}>
+            <span
+              key={i}
+              className={`px-2 py-1 rounded text-sm ${i === pointer ? 'bg-purple-500 text-white' : 'bg-gray-200'}`}
+            >
               {h}
             </span>
           ))}
@@ -972,11 +1130,17 @@ function UseStorageDemo() {
         className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500"
       />
       <div className="flex gap-2">
-        <button onClick={removeName} className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm">Clear Storage</button>
+        <button
+          onClick={removeName}
+          className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm"
+        >
+          Clear Storage
+        </button>
       </div>
       <div className="bg-blue-50 p-3 rounded-lg text-sm">
         <Database className="w-4 h-4 inline mr-2 text-blue-500" />
-        Stored value: <code className="bg-blue-100 px-1 rounded">{name || '(empty)'}</code>
+        Stored value:{' '}
+        <code className="bg-blue-100 px-1 rounded">{name || '(empty)'}</code>
       </div>
     </div>
   );
@@ -985,9 +1149,12 @@ function UseStorageDemo() {
 // Demo 9: useAsync
 function UseAsyncDemo() {
   const asyncFn = useCallback(async () => {
-    await new Promise(r => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 1500));
     if (Math.random() > 0.3) {
-      return { message: 'Success!', timestamp: new Date().toLocaleTimeString() };
+      return {
+        message: 'Success!',
+        timestamp: new Date().toLocaleTimeString(),
+      };
     }
     throw new Error('Random failure (30% chance)');
   }, []);
@@ -1022,7 +1189,9 @@ function UseAsyncDemo() {
 
 // Demo 10: useFetch
 function UseFetchDemo() {
-  const { data, loading, error } = useFetch('https://jsonplaceholder.typicode.com/posts/1');
+  const { data, loading, error } = useFetch(
+    'https://jsonplaceholder.typicode.com/posts/1'
+  );
 
   return (
     <div className="space-y-4">
@@ -1054,11 +1223,15 @@ function UseScriptDemo() {
       <div className="flex items-center gap-3">
         <FileCode className="w-6 h-6 text-yellow-500" />
         <span>jQuery Script:</span>
-        <span className={`px-2 py-1 rounded text-sm ${
-          status === 'ready' ? 'bg-green-100 text-green-700' :
-          status === 'error' ? 'bg-red-100 text-red-700' :
-          'bg-yellow-100 text-yellow-700'
-        }`}>
+        <span
+          className={`px-2 py-1 rounded text-sm ${
+            status === 'ready'
+              ? 'bg-green-100 text-green-700'
+              : status === 'error'
+                ? 'bg-red-100 text-red-700'
+                : 'bg-yellow-100 text-yellow-700'
+          }`}
+        >
           {status}
         </span>
       </div>
@@ -1077,7 +1250,9 @@ function UseEventListenerDemo() {
     <div className="space-y-4">
       <div className="bg-gray-50 p-4 rounded-lg text-center">
         <div className="text-gray-500 text-sm mb-2">Press any key</div>
-        <div className="text-4xl font-mono font-bold text-purple-600">{key || '—'}</div>
+        <div className="text-4xl font-mono font-bold text-purple-600">
+          {key || '—'}
+        </div>
       </div>
     </div>
   );
@@ -1090,10 +1265,17 @@ function UseOnScreenDemo() {
 
   return (
     <div className="space-y-4">
-      <div className={`p-4 rounded-lg transition-all duration-300 ${isVisible ? 'bg-green-100 border-green-300' : 'bg-gray-100 border-gray-300'} border-2`}>
+      <div
+        className={`p-4 rounded-lg transition-all duration-300 ${isVisible ? 'bg-green-100 border-green-300' : 'bg-gray-100 border-gray-300'} border-2`}
+      >
         <div className="flex items-center gap-2">
-          <Eye className={`w-5 h-5 ${isVisible ? 'text-green-600' : 'text-gray-400'}`} />
-          <span ref={ref} className={isVisible ? 'text-green-700 font-bold' : 'text-gray-500'}>
+          <Eye
+            className={`w-5 h-5 ${isVisible ? 'text-green-600' : 'text-gray-400'}`}
+          />
+          <span
+            ref={ref}
+            className={isVisible ? 'text-green-700 font-bold' : 'text-gray-500'}
+          >
             {isVisible ? 'I am visible!' : 'Not visible yet'}
           </span>
         </div>
@@ -1131,20 +1313,32 @@ function UseMediaQueryDemo() {
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      <div className={`p-3 rounded-lg ${isMobile ? 'bg-green-100' : 'bg-gray-100'}`}>
+      <div
+        className={`p-3 rounded-lg ${isMobile ? 'bg-green-100' : 'bg-gray-100'}`}
+      >
         <Smartphone className="w-5 h-5 mb-1" />
         <span className="text-sm">Mobile: {isMobile ? '✓' : '✗'}</span>
       </div>
-      <div className={`p-3 rounded-lg ${isTablet ? 'bg-green-100' : 'bg-gray-100'}`}>
+      <div
+        className={`p-3 rounded-lg ${isTablet ? 'bg-green-100' : 'bg-gray-100'}`}
+      >
         <Monitor className="w-5 h-5 mb-1" />
         <span className="text-sm">Tablet: {isTablet ? '✓' : '✗'}</span>
       </div>
-      <div className={`p-3 rounded-lg ${isDesktop ? 'bg-green-100' : 'bg-gray-100'}`}>
+      <div
+        className={`p-3 rounded-lg ${isDesktop ? 'bg-green-100' : 'bg-gray-100'}`}
+      >
         <Monitor className="w-5 h-5 mb-1" />
         <span className="text-sm">Desktop: {isDesktop ? '✓' : '✗'}</span>
       </div>
-      <div className={`p-3 rounded-lg ${prefersDark ? 'bg-gray-800 text-white' : 'bg-gray-100'}`}>
-        {prefersDark ? <Moon className="w-5 h-5 mb-1" /> : <Sun className="w-5 h-5 mb-1" />}
+      <div
+        className={`p-3 rounded-lg ${prefersDark ? 'bg-gray-800 text-white' : 'bg-gray-100'}`}
+      >
+        {prefersDark ? (
+          <Moon className="w-5 h-5 mb-1" />
+        ) : (
+          <Sun className="w-5 h-5 mb-1" />
+        )}
         <span className="text-sm">Dark Mode: {prefersDark ? '✓' : '✗'}</span>
       </div>
     </div>
@@ -1174,8 +1368,13 @@ function UseGeolocationDemo() {
             <span className="font-bold text-green-700">Location Found</span>
           </div>
           <div className="grid grid-cols-2 gap-2 text-sm">
-            <div>Lat: <span className="font-mono">{geo.latitude?.toFixed(4)}</span></div>
-            <div>Lng: <span className="font-mono">{geo.longitude?.toFixed(4)}</span></div>
+            <div>
+              Lat: <span className="font-mono">{geo.latitude?.toFixed(4)}</span>
+            </div>
+            <div>
+              Lng:{' '}
+              <span className="font-mono">{geo.longitude?.toFixed(4)}</span>
+            </div>
           </div>
         </div>
       )}
@@ -1199,7 +1398,11 @@ function UseStateWithValidationDemo() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter email address"
           className={`w-full p-3 border-2 rounded-lg pr-10 ${
-            email ? (isValid ? 'border-green-300 bg-green-50' : 'border-red-300 bg-red-50') : 'border-gray-300'
+            email
+              ? isValid
+                ? 'border-green-300 bg-green-50'
+                : 'border-red-300 bg-red-50'
+              : 'border-gray-300'
           }`}
         />
         {email && (
@@ -1213,7 +1416,11 @@ function UseStateWithValidationDemo() {
         )}
       </div>
       <div className={`text-sm ${isValid ? 'text-green-600' : 'text-red-600'}`}>
-        {email ? (isValid ? 'Valid email format!' : 'Invalid email format') : 'Enter an email to validate'}
+        {email
+          ? isValid
+            ? 'Valid email format!'
+            : 'Invalid email format'
+          : 'Enter an email to validate'}
       </div>
     </div>
   );
@@ -1265,7 +1472,9 @@ function UseClickOutsideDemo() {
           className="absolute top-full mt-2 left-0 bg-white shadow-lg rounded-lg p-4 border z-10 min-w-48"
         >
           <div className="font-bold mb-2">Click outside to close</div>
-          <div className="text-sm text-gray-600">This dropdown uses useClickOutside</div>
+          <div className="text-sm text-gray-600">
+            This dropdown uses useClickOutside
+          </div>
         </div>
       )}
     </div>
@@ -1287,7 +1496,9 @@ function UseDarkModeDemo() {
         {isDark ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
         <span>{isDark ? 'Dark Mode' : 'Light Mode'}</span>
       </button>
-      <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-800'}`}>
+      <div
+        className={`p-4 rounded-lg ${isDark ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-800'}`}
+      >
         Theme preference saved to localStorage
       </div>
     </div>
@@ -1302,7 +1513,9 @@ function UseCopyToClipboardDemo() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <code className="bg-gray-100 px-3 py-2 rounded-lg flex-1 font-mono text-sm">{textToCopy}</code>
+        <code className="bg-gray-100 px-3 py-2 rounded-lg flex-1 font-mono text-sm">
+          {textToCopy}
+        </code>
         <button
           onClick={() => copy(textToCopy)}
           className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
@@ -1333,10 +1546,30 @@ function UseCookieDemo() {
         <code className="bg-gray-100 px-2 py-1 rounded">{theme}</code>
       </div>
       <div className="flex gap-2">
-        <button onClick={() => setTheme('light')} className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-sm">Light</button>
-        <button onClick={() => setTheme('dark')} className="px-3 py-1 bg-gray-700 text-white rounded-lg text-sm">Dark</button>
-        <button onClick={() => setTheme('system')} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm">System</button>
-        <button onClick={deleteTheme} className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm">Delete</button>
+        <button
+          onClick={() => setTheme('light')}
+          className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-sm"
+        >
+          Light
+        </button>
+        <button
+          onClick={() => setTheme('dark')}
+          className="px-3 py-1 bg-gray-700 text-white rounded-lg text-sm"
+        >
+          Dark
+        </button>
+        <button
+          onClick={() => setTheme('system')}
+          className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm"
+        >
+          System
+        </button>
+        <button
+          onClick={deleteTheme}
+          className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm"
+        >
+          Delete
+        </button>
       </div>
     </div>
   );
@@ -1355,7 +1588,9 @@ function UseTranslationDemo() {
             key={lang}
             onClick={() => setLanguage(lang)}
             className={`px-3 py-1 rounded-lg text-sm transition ${
-              language === lang ? 'bg-purple-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
+              language === lang
+                ? 'bg-purple-500 text-white'
+                : 'bg-gray-100 hover:bg-gray-200'
             }`}
           >
             {lang.toUpperCase()}
@@ -1363,9 +1598,18 @@ function UseTranslationDemo() {
         ))}
       </div>
       <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-        <div><span className="text-gray-500">greeting:</span> <span className="font-bold">{t('greeting')}</span></div>
-        <div><span className="text-gray-500">farewell:</span> <span className="font-bold">{t('farewell')}</span></div>
-        <div><span className="text-gray-500">thanks:</span> <span className="font-bold">{t('thanks')}</span></div>
+        <div>
+          <span className="text-gray-500">greeting:</span>{' '}
+          <span className="font-bold">{t('greeting')}</span>
+        </div>
+        <div>
+          <span className="text-gray-500">farewell:</span>{' '}
+          <span className="font-bold">{t('farewell')}</span>
+        </div>
+        <div>
+          <span className="text-gray-500">thanks:</span>{' '}
+          <span className="font-bold">{t('thanks')}</span>
+        </div>
       </div>
     </div>
   );
@@ -1376,7 +1620,9 @@ function UseOnlineStatusDemo() {
   const isOnline = useOnlineStatus();
 
   return (
-    <div className={`p-4 rounded-lg flex items-center gap-3 ${isOnline ? 'bg-green-50' : 'bg-red-50'}`}>
+    <div
+      className={`p-4 rounded-lg flex items-center gap-3 ${isOnline ? 'bg-green-50' : 'bg-red-50'}`}
+    >
       {isOnline ? (
         <>
           <Wifi className="w-6 h-6 text-green-500" />
@@ -1400,14 +1646,17 @@ function UseRenderCountDemo() {
   return (
     <div className="space-y-4">
       <button
-        onClick={() => setCount(c => c + 1)}
+        onClick={() => setCount((c) => c + 1)}
         className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
       >
         Increment: {count}
       </button>
       <div className="bg-orange-50 p-3 rounded-lg flex items-center gap-2">
         <RefreshCw className="w-5 h-5 text-orange-500" />
-        <span>Component rendered <span className="font-bold text-orange-600">{renderCount}</span> times</span>
+        <span>
+          Component rendered{' '}
+          <span className="font-bold text-orange-600">{renderCount}</span> times
+        </span>
       </div>
     </div>
   );
@@ -1421,7 +1670,7 @@ function UseDebugInformationDemo() {
   return (
     <div className="space-y-4">
       <button
-        onClick={() => setCount(c => c + 1)}
+        onClick={() => setCount((c) => c + 1)}
         className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
       >
         Update Count: {count}
@@ -1451,7 +1700,9 @@ function UseHoverDemo() {
           : 'bg-gray-100 text-gray-700'
       }`}
     >
-      <MousePointer2 className={`w-8 h-8 mx-auto mb-2 transition-transform ${isHovered ? 'animate-bounce' : ''}`} />
+      <MousePointer2
+        className={`w-8 h-8 mx-auto mb-2 transition-transform ${isHovered ? 'animate-bounce' : ''}`}
+      />
       <div className="font-bold">{isHovered ? 'Hovering!' : 'Hover me!'}</div>
     </div>
   );
@@ -1462,21 +1713,18 @@ function UseLongPressDemo() {
   const [count, setCount] = useState(0);
   const [pressing, setPressing] = useState(false);
 
-  const longPressProps = useLongPress(
-    () => setCount(c => c + 10),
-    {
-      threshold: 500,
-      onStart: () => setPressing(true),
-      onFinish: () => setPressing(false),
-      onCancel: () => setPressing(false),
-    }
-  );
+  const longPressProps = useLongPress(() => setCount((c) => c + 10), {
+    threshold: 500,
+    onStart: () => setPressing(true),
+    onFinish: () => setPressing(false),
+    onCancel: () => setPressing(false),
+  });
 
   return (
     <div className="space-y-4">
       <button
         {...longPressProps}
-        onClick={() => setCount(c => c + 1)}
+        onClick={() => setCount((c) => c + 1)}
         className={`px-6 py-4 rounded-lg font-bold transition-all ${
           pressing
             ? 'bg-purple-600 text-white scale-95'
@@ -1497,28 +1745,35 @@ function UseLongPressDemo() {
 // ============================================
 // HOOK CARD COMPONENT
 // ============================================
-function HookCard({ number, name, description, useCases, children, code }) {
-  const [showCode, setShowCode] = useState(false);
+function HookCard({
+  number,
+  name,
+  description,
+  useCases,
+  children,
+  hookCode,
+  usageCode,
+}) {
+  const [activeTab, setActiveTab] = useState('demo');
+
+  const tabs = [
+    { id: 'demo', label: 'Demo', icon: Play },
+    ...(hookCode ? [{ id: 'hook', label: 'Hook Code', icon: Code }] : []),
+    ...(usageCode ? [{ id: 'usage', label: 'Usage', icon: FileCode }] : []),
+  ];
 
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden">
       <div className="p-5">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 font-bold">
-              #{number}
-            </div>
-            <div>
-              <h3 className="font-bold text-gray-800">{name}</h3>
-              <p className="text-sm text-gray-500">{description}</p>
-            </div>
+        {/* Header */}
+        <div className="flex items-start gap-3 mb-3">
+          <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 font-bold shrink-0">
+            #{number}
           </div>
-          <button
-            onClick={() => setShowCode(!showCode)}
-            className="text-gray-400 hover:text-purple-500 transition"
-          >
-            <Code className="w-5 h-5" />
-          </button>
+          <div>
+            <h3 className="font-bold text-gray-800">{name}</h3>
+            <p className="text-sm text-gray-500">{description}</p>
+          </div>
         </div>
 
         {/* Use Cases */}
@@ -1538,16 +1793,47 @@ function HookCard({ number, name, description, useCases, children, code }) {
             </ul>
           </div>
         )}
-        
-        {showCode && code && (
-          <div className="mb-4 bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
-            <pre className="text-xs font-mono whitespace-pre-wrap">{code}</pre>
+
+        {/* Tabs */}
+        <div className="border-b border-gray-200 mb-4 flex gap-0">
+          {tabs.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setActiveTab(id)}
+              className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 transition-colors -mb-px ${
+                activeTab === id
+                  ? 'border-purple-500 text-purple-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'demo' && <div>{children}</div>}
+        {activeTab === 'hook' && hookCode && (
+          <div className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
+            <div className="text-xs text-gray-400 mb-2 font-mono">
+              // Hook implementation
+            </div>
+            <pre className="text-xs font-mono whitespace-pre-wrap leading-relaxed">
+              {hookCode}
+            </pre>
           </div>
         )}
-
-        <div className="border-t pt-4">
-          {children}
-        </div>
+        {activeTab === 'usage' && usageCode && (
+          <div className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
+            <div className="text-xs text-gray-400 mb-2 font-mono">
+              // Usage in a component
+            </div>
+            <pre className="text-xs font-mono whitespace-pre-wrap leading-relaxed">
+              {usageCode}
+            </pre>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1558,12 +1844,16 @@ function HookCard({ number, name, description, useCases, children, code }) {
 // ============================================
 function SectionHeader({ title, range, color }) {
   return (
-    <div className={`bg-linear-to-r ${color} text-white p-4 rounded-xl mb-6 flex items-center justify-between`}>
+    <div
+      className={`bg-linear-to-r ${color} text-white p-4 rounded-xl mb-6 flex items-center justify-between`}
+    >
       <div className="flex items-center gap-3">
         <Layers className="w-6 h-6" />
         <h2 className="text-xl font-bold">{title}</h2>
       </div>
-      <span className="bg-white/20 px-3 py-1 rounded-full text-sm">Hooks {range}</span>
+      <span className="bg-white/20 px-3 py-1 rounded-full text-sm">
+        Hooks {range}
+      </span>
     </div>
   );
 }
@@ -1591,33 +1881,43 @@ export default function CustomHooksScreen() {
               <Puzzle className="w-7 h-7" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">What Are Custom Hooks?</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                What Are Custom Hooks?
+              </h2>
               <p className="text-gray-700 mb-4">
-                Custom Hooks are JavaScript functions that start with <code className="bg-purple-100 px-1 rounded">use</code> and 
-                let you extract component logic into reusable functions. They follow the same rules as React's built-in hooks 
-                and allow you to share stateful logic between components without changing their hierarchy.
+                Custom Hooks are JavaScript functions that start with{' '}
+                <code className="bg-purple-100 px-1 rounded">use</code> and let
+                you extract component logic into reusable functions. They follow
+                the same rules as React's built-in hooks and allow you to share
+                stateful logic between components without changing their
+                hierarchy.
               </p>
               <div className="grid md:grid-cols-3 gap-4">
                 <div className="bg-white p-4 rounded-lg border border-purple-200">
                   <Zap className="w-5 h-5 text-purple-500 mb-2" />
                   <h3 className="font-bold text-purple-700">Reusable Logic</h3>
-                  <p className="text-sm text-gray-600">Share stateful logic between components</p>
+                  <p className="text-sm text-gray-600">
+                    Share stateful logic between components
+                  </p>
                 </div>
                 <div className="bg-white p-4 rounded-lg border border-purple-200">
                   <Code className="w-5 h-5 text-purple-500 mb-2" />
                   <h3 className="font-bold text-purple-700">Clean Code</h3>
-                  <p className="text-sm text-gray-600">Keep components focused and readable</p>
+                  <p className="text-sm text-gray-600">
+                    Keep components focused and readable
+                  </p>
                 </div>
                 <div className="bg-white p-4 rounded-lg border border-purple-200">
                   <CheckCircle className="w-5 h-5 text-purple-500 mb-2" />
                   <h3 className="font-bold text-purple-700">Testable</h3>
-                  <p className="text-sm text-gray-600">Easy to test in isolation</p>
+                  <p className="text-sm text-gray-600">
+                    Easy to test in isolation
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
         {/* Rules of Hooks */}
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-8">
           <div className="flex items-start gap-3">
@@ -1625,14 +1925,22 @@ export default function CustomHooksScreen() {
             <div>
               <h3 className="font-bold text-amber-800 mb-2">Rules of Hooks</h3>
               <ul className="text-sm text-amber-900 space-y-1">
-                <li>• <strong>Only call hooks at the top level</strong> - Don't call hooks inside loops, conditions, or nested functions</li>
-                <li>• <strong>Only call hooks from React functions</strong> - Call them from function components or custom hooks</li>
-                <li>• <strong>Start with "use"</strong> - Custom hook names must start with "use" (e.g., useToggle, useFetch)</li>
+                <li>
+                  • <strong>Only call hooks at the top level</strong> - Don't
+                  call hooks inside loops, conditions, or nested functions
+                </li>
+                <li>
+                  • <strong>Only call hooks from React functions</strong> - Call
+                  them from function components or custom hooks
+                </li>
+                <li>
+                  • <strong>Start with "use"</strong> - Custom hook names must
+                  start with "use" (e.g., useToggle, useFetch)
+                </li>
               </ul>
             </div>
           </div>
         </div>
-
         {/* Search */}
         <div className="relative mb-8">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -1644,26 +1952,31 @@ export default function CustomHooksScreen() {
             className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
         </div>
-
         {/* Hooks Quick Overview */}
         <div className="bg-white rounded-xl shadow p-5 mb-8">
           <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
             <Lightbulb className="w-5 h-5 text-yellow-500" />
-            All 30 Custom Hooks Overview
+            10 Custom Hooks — State &amp; Effect Utilities + State History &amp;
+            Storage
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 text-sm">
             {[
-              'useToggle', 'useTimeout', 'useDebounce', 'useUpdateEffect', 'useArray',
-              'usePrevious', 'useStateWithHistory', 'useStorage', 'useAsync', 'useFetch',
-              'useScript', 'useDeepCompareEffect', 'useEventListener', 'useOnScreen', 'useWindowSize',
-              'useMediaQuery', 'useGeolocation', 'useStateWithValidation', 'useSize', 'useEffectOnce',
-              'useClickOutside', 'useDarkMode', 'useCopyToClipboard', 'useCookie', 'useTranslation',
-              'useOnlineStatus', 'useRenderCount', 'useDebugInformation', 'useHover', 'useLongPress'
+              'useToggle',
+              'useTimeout',
+              'useDebounce',
+              'useUpdateEffect',
+              'useArray',
+              'usePrevious',
+              'useStateWithHistory',
+              'useStorage',
+              'useAsync',
+              'useFetch',
             ].map((hook, i) => (
               <div
                 key={hook}
                 className={`px-2 py-1 rounded text-xs font-mono ${
-                  searchQuery && hook.toLowerCase().includes(searchQuery.toLowerCase())
+                  searchQuery &&
+                  hook.toLowerCase().includes(searchQuery.toLowerCase())
                     ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-300'
                     : 'bg-gray-100 text-gray-600'
                 }`}
@@ -1673,108 +1986,155 @@ export default function CustomHooksScreen() {
             ))}
           </div>
         </div>
-
         {/* Section 1: Hooks #1-5 */}
         <div className="mb-6">
-          <button
-            onClick={() => toggleSection(1)}
-            className="w-full"
-          >
-            <SectionHeader title="State & Effect Utilities" range="#1-5" color="from-purple-500 to-indigo-500" />
+          <button onClick={() => toggleSection(1)} className="w-full">
+            <SectionHeader
+              title="State & Effect Utilities"
+              range="#1-5"
+              color="from-purple-500 to-indigo-500"
+            />
           </button>
           {(expandedSection === 1 || expandedSection === null) && (
             <div className="grid lg:grid-cols-2 gap-6">
-              <HookCard 
-                number={1} 
-                name="useToggle" 
+              <HookCard
+                number={1}
+                name="useToggle"
                 description="Toggle boolean state with utility functions"
                 useCases={[
-                  "Modal open/close states",
-                  "Sidebar expand/collapse",
-                  "Dark mode toggle",
-                  "Show/hide password fields",
-                  "Accordion expand states"
+                  'Modal open/close states',
+                  'Sidebar expand/collapse',
+                  'Dark mode toggle',
+                  'Show/hide password fields',
+                  'Accordion expand states',
                 ]}
-                code={`const useToggle = (initialValue = false) => {
+                hookCode={`const useToggle = (initialValue = false) => {
   const [value, setValue] = useState(initialValue);
   const toggle = useCallback(() => setValue(v => !v), []);
   const setTrue = useCallback(() => setValue(true), []);
   const setFalse = useCallback(() => setValue(false), []);
   return [value, toggle, setTrue, setFalse];
 };`}
+                usageCode={`function Modal() {
+  const [isOpen, toggle, open, close] = useToggle(false);
+
+  return (
+    <>
+      <button onClick={open}>Open Modal</button>
+      {isOpen && (
+        <div className="modal">
+          <p>Modal content</p>
+          <button onClick={close}>Close</button>
+          <button onClick={toggle}>Toggle</button>
+        </div>
+      )}
+    </>
+  );
+}`}
               >
                 <UseToggleDemo />
               </HookCard>
 
-              <HookCard 
-                number={2} 
-                name="useTimeout" 
+              <HookCard
+                number={2}
+                name="useTimeout"
                 description="Declarative setTimeout with reset/clear"
                 useCases={[
-                  "Auto-dismiss notifications/toasts",
-                  "Delayed redirects after actions",
-                  "Session timeout warnings",
-                  "Auto-save drafts after inactivity",
-                  "Countdown timers"
+                  'Auto-dismiss notifications/toasts',
+                  'Delayed redirects after actions',
+                  'Session timeout warnings',
+                  'Auto-save drafts after inactivity',
+                  'Countdown timers',
                 ]}
-                code={`const useTimeout = (callback, delay) => {
+                hookCode={`const useTimeout = (callback, delay) => {
   const callbackRef = useRef(callback);
   const timeoutRef = useRef(null);
-  
+
   const set = useCallback(() => {
     timeoutRef.current = setTimeout(() => callbackRef.current(), delay);
   }, [delay]);
-  
+
   const clear = useCallback(() => {
     timeoutRef.current && clearTimeout(timeoutRef.current);
   }, []);
-  
+
   useEffect(() => { set(); return clear; }, [delay, set, clear]);
   return { reset: () => { clear(); set(); }, clear };
 };`}
+                usageCode={`function Notification({ message }) {
+  const [visible, setVisible] = useState(true);
+  const { reset } = useTimeout(() => setVisible(false), 3000);
+
+  if (!visible) return null;
+
+  return (
+    <div className="toast">
+      {message}
+      <button onClick={reset}>Reset Timer</button>
+    </div>
+  );
+}`}
               >
                 <UseTimeoutDemo />
               </HookCard>
 
-              <HookCard 
-                number={3} 
-                name="useDebounce" 
+              <HookCard
+                number={3}
+                name="useDebounce"
                 description="Debounce any value with configurable delay"
                 useCases={[
-                  "Search input with API calls",
-                  "Form auto-save functionality",
-                  "Window resize handlers",
-                  "Scroll position tracking",
-                  "Real-time validation feedback"
+                  'Search input with API calls',
+                  'Form auto-save functionality',
+                  'Window resize handlers',
+                  'Scroll position tracking',
+                  'Real-time validation feedback',
                 ]}
-                code={`const useDebounce = (value, delay = 500) => {
+                hookCode={`const useDebounce = (value, delay = 500) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
-  
+
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedValue(value), delay);
     return () => clearTimeout(handler);
   }, [value, delay]);
-  
+
   return debouncedValue;
 };`}
+                usageCode={`function SearchBar() {
+  const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 500);
+
+  useEffect(() => {
+    if (debouncedQuery) {
+      fetchResults(debouncedQuery); // fires 500ms after typing stops
+    }
+  }, [debouncedQuery]);
+
+  return (
+    <input
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+      placeholder="Search..."
+    />
+  );
+}`}
               >
                 <UseDebounceDemo />
               </HookCard>
 
-              <HookCard 
-                number={4} 
-                name="useUpdateEffect" 
+              <HookCard
+                number={4}
+                name="useUpdateEffect"
                 description="useEffect that skips the first render"
                 useCases={[
-                  "Run effects only on prop/state changes",
-                  "Analytics tracking on value changes",
-                  "Skip initial API call on mount",
-                  "Sync external systems on updates only",
-                  "Trigger animations on state change"
+                  'Run effects only on prop/state changes',
+                  'Analytics tracking on value changes',
+                  'Skip initial API call on mount',
+                  'Sync external systems on updates only',
+                  'Trigger animations on state change',
                 ]}
-                code={`const useUpdateEffect = (callback, dependencies) => {
+                hookCode={`const useUpdateEffect = (callback, dependencies) => {
   const firstRenderRef = useRef(true);
-  
+
   useEffect(() => {
     if (firstRenderRef.current) {
       firstRenderRef.current = false;
@@ -1783,115 +2143,183 @@ export default function CustomHooksScreen() {
     return callback();
   }, dependencies);
 };`}
+                usageCode={`function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+
+  // Runs only when userId CHANGES, not on initial mount
+  useUpdateEffect(() => {
+    trackAnalytics('user_switched', { userId });
+    fetchUser(userId).then(setUser);
+  }, [userId]);
+
+  return <div>{user?.name}</div>;
+}`}
               >
                 <UseUpdateEffectDemo />
               </HookCard>
 
-              <HookCard 
-                number={5} 
-                name="useArray" 
+              <HookCard
+                number={5}
+                name="useArray"
                 description="Array state with push, filter, update, remove, clear"
                 useCases={[
-                  "Todo list management",
-                  "Shopping cart items",
-                  "Dynamic form fields",
-                  "Tag/chip input components",
-                  "Table row selection"
+                  'Todo list management',
+                  'Shopping cart items',
+                  'Dynamic form fields',
+                  'Tag/chip input components',
+                  'Table row selection',
                 ]}
-                code={`const useArray = (initialArray = []) => {
+                hookCode={`const useArray = (initialArray = []) => {
   const [array, setArray] = useState(initialArray);
-  
+
   const push = useCallback((el) => setArray(a => [...a, el]), []);
   const filter = useCallback((cb) => setArray(a => a.filter(cb)), []);
-  const update = useCallback((i, el) => setArray(a => 
+  const update = useCallback((i, el) => setArray(a =>
     a.map((v, idx) => idx === i ? el : v)), []);
-  const remove = useCallback((i) => setArray(a => 
+  const remove = useCallback((i) => setArray(a =>
     a.filter((_, idx) => idx !== i)), []);
   const clear = useCallback(() => setArray([]), []);
-  
+
   return { array, set: setArray, push, filter, update, remove, clear };
 };`}
+                usageCode={`function TodoList() {
+  const { array: todos, push, remove, clear } = useArray([]);
+  const [input, setInput] = useState('');
+
+  const addTodo = () => {
+    if (input.trim()) {
+      push({ id: Date.now(), text: input });
+      setInput('');
+    }
+  };
+
+  return (
+    <div>
+      <input value={input} onChange={(e) => setInput(e.target.value)} />
+      <button onClick={addTodo}>Add</button>
+      <button onClick={clear}>Clear All</button>
+      {todos.map((todo, i) => (
+        <div key={todo.id}>
+          {todo.text}
+          <button onClick={() => remove(i)}>Delete</button>
+        </div>
+      ))}
+    </div>
+  );
+}`}
               >
                 <UseArrayDemo />
               </HookCard>
             </div>
           )}
         </div>
-
         {/* Section 2: Hooks #6-10 */}
         <div className="mb-6">
-          <button
-            onClick={() => toggleSection(2)}
-            className="w-full"
-          >
-            <SectionHeader title="State History & Storage" range="#6-10" color="from-blue-500 to-cyan-500" />
+          <button onClick={() => toggleSection(2)} className="w-full">
+            <SectionHeader
+              title="State History & Storage"
+              range="#6-10"
+              color="from-blue-500 to-cyan-500"
+            />
           </button>
           {(expandedSection === 2 || expandedSection === null) && (
             <div className="grid lg:grid-cols-2 gap-6">
-              <HookCard 
-                number={6} 
-                name="usePrevious" 
+              <HookCard
+                number={6}
+                name="usePrevious"
                 description="Track the previous value of a variable"
                 useCases={[
-                  "Compare current vs previous props",
-                  "Animation direction detection",
-                  "Highlighting changed values",
-                  "Detecting state transitions",
-                  "Undo functionality tracking"
+                  'Compare current vs previous props',
+                  'Animation direction detection',
+                  'Highlighting changed values',
+                  'Detecting state transitions',
+                  'Undo functionality tracking',
                 ]}
-                code={`const usePrevious = (value) => {
+                hookCode={`const usePrevious = (value) => {
   const currentRef = useRef(value);
   const previousRef = useRef();
-  
+
   if (currentRef.current !== value) {
     previousRef.current = currentRef.current;
     currentRef.current = value;
   }
-  
+
   return previousRef.current;
 };`}
+                usageCode={`function Counter() {
+  const [count, setCount] = useState(0);
+  const prevCount = usePrevious(count);
+
+  return (
+    <div>
+      <p>Current: {count}</p>
+      <p>Previous: {prevCount ?? 'none'}</p>
+      <p>
+        {count > prevCount ? '▲ Increased' : '▼ Decreased'}
+      </p>
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+      <button onClick={() => setCount(c => c - 1)}>-</button>
+    </div>
+  );
+}`}
               >
                 <UsePreviousDemo />
               </HookCard>
 
-              <HookCard 
-                number={7} 
-                name="useStateWithHistory" 
+              <HookCard
+                number={7}
+                name="useStateWithHistory"
                 description="State with undo/redo history navigation"
                 useCases={[
-                  "Text editor with undo/redo",
-                  "Drawing apps - stroke history",
-                  "Form wizard back navigation",
-                  "Image editing history",
-                  "Game state management"
+                  'Text editor with undo/redo',
+                  'Drawing apps - stroke history',
+                  'Form wizard back navigation',
+                  'Image editing history',
+                  'Game state management',
                 ]}
-                code={`const useStateWithHistory = (initialValue, capacity = 10) => {
+                hookCode={`const useStateWithHistory = (initialValue, capacity = 10) => {
   const [value, setValue] = useState(initialValue);
   const historyRef = useRef([initialValue]);
   const pointerRef = useRef(0);
-  
+
   const set = useCallback((v) => { /* update history */ }, []);
   const back = useCallback(() => { /* move pointer back */ }, []);
   const forward = useCallback(() => { /* move pointer forward */ }, []);
-  
+
   return { value, set, back, forward, history, pointer };
 };`}
+                usageCode={`function TextEditor() {
+  const { value, set, back, forward, history } =
+    useStateWithHistory('');
+
+  return (
+    <div>
+      <textarea
+        value={value}
+        onChange={(e) => set(e.target.value)}
+      />
+      <button onClick={back}>↩ Undo</button>
+      <button onClick={forward}>↪ Redo</button>
+      <p>History: {history.length} snapshots</p>
+    </div>
+  );
+}`}
               >
                 <UseStateWithHistoryDemo />
               </HookCard>
 
-              <HookCard 
-                number={8} 
-                name="useStorage" 
+              <HookCard
+                number={8}
+                name="useStorage"
                 description="Sync state with localStorage/sessionStorage"
                 useCases={[
-                  "Remember user preferences",
-                  "Persist form draft data",
-                  "Cache API responses",
-                  "Store authentication tokens",
-                  "Save app settings across sessions"
+                  'Remember user preferences',
+                  'Persist form draft data',
+                  'Cache API responses',
+                  'Store authentication tokens',
+                  'Save app settings across sessions',
                 ]}
-                code={`const useStorage = (key, initialValue, type = 'local') => {
+                hookCode={`const useStorage = (key, initialValue, type = 'local') => {
   const storage = type === 'local' ? localStorage : sessionStorage;
   const [value, setValue] = useState(() => {
     try {
@@ -1899,34 +2327,48 @@ export default function CustomHooksScreen() {
       return item ? JSON.parse(item) : initialValue;
     } catch { return initialValue; }
   });
-  
+
   const setStoredValue = useCallback((newValue) => {
     storage.setItem(key, JSON.stringify(newValue));
     setValue(newValue);
   }, [key, storage]);
-  
+
   return [value, setStoredValue, () => storage.removeItem(key)];
 };`}
+                usageCode={`function Settings() {
+  const [theme, setTheme, removeTheme] =
+    useStorage('app-theme', 'light');
+
+  return (
+    <div>
+      <p>Current theme: {theme}</p>
+      <button onClick={() => setTheme('dark')}>Dark</button>
+      <button onClick={() => setTheme('light')}>Light</button>
+      <button onClick={removeTheme}>Reset</button>
+      {/* Value persists across page refreshes */}
+    </div>
+  );
+}`}
               >
                 <UseStorageDemo />
               </HookCard>
 
-              <HookCard 
-                number={9} 
-                name="useAsync" 
+              <HookCard
+                number={9}
+                name="useAsync"
                 description="Handle async functions with loading/error states"
                 useCases={[
-                  "Form submission handling",
-                  "File upload with progress",
-                  "API mutation operations",
-                  "Authentication flows",
-                  "Complex async workflows"
+                  'Form submission handling',
+                  'File upload with progress',
+                  'API mutation operations',
+                  'Authentication flows',
+                  'Complex async workflows',
                 ]}
-                code={`const useAsync = (asyncFunction, immediate = true) => {
+                hookCode={`const useAsync = (asyncFunction, immediate = true) => {
   const [state, setState] = useState({
     loading: immediate, error: null, data: null
   });
-  
+
   const execute = useCallback(async (...args) => {
     setState({ loading: true, error: null, data: null });
     try {
@@ -1936,29 +2378,50 @@ export default function CustomHooksScreen() {
       setState({ loading: false, error, data: null });
     }
   }, [asyncFunction]);
-  
+
   return { ...state, execute };
 };`}
+                usageCode={`function SubmitForm() {
+  const submitFn = useCallback(async (formData) => {
+    const res = await fetch('/api/submit', {
+      method: 'POST',
+      body: JSON.stringify(formData),
+    });
+    return res.json();
+  }, []);
+
+  const { loading, error, data, execute } = useAsync(submitFn, false);
+
+  return (
+    <form onSubmit={(e) => { e.preventDefault(); execute(formData); }}>
+      <button disabled={loading}>
+        {loading ? 'Submitting...' : 'Submit'}
+      </button>
+      {error && <p className="error">{error.message}</p>}
+      {data && <p className="success">Saved!</p>}
+    </form>
+  );
+}`}
               >
                 <UseAsyncDemo />
               </HookCard>
 
-              <HookCard 
-                number={10} 
-                name="useFetch" 
+              <HookCard
+                number={10}
+                name="useFetch"
                 description="Fetch data with automatic abort controller"
                 useCases={[
-                  "Load data on component mount",
-                  "API data fetching with cleanup",
-                  "Prevent memory leaks on unmount",
-                  "Simple GET request handling",
-                  "Dashboard data loading"
+                  'Load data on component mount',
+                  'API data fetching with cleanup',
+                  'Prevent memory leaks on unmount',
+                  'Simple GET request handling',
+                  'Dashboard data loading',
                 ]}
-                code={`const useFetch = (url, options = {}) => {
+                hookCode={`const useFetch = (url, options = {}) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   useEffect(() => {
     const controller = new AbortController();
     fetch(url, { ...options, signal: controller.signal })
@@ -1968,40 +2431,58 @@ export default function CustomHooksScreen() {
       .finally(() => setLoading(false));
     return () => controller.abort();
   }, [url]);
-  
+
   return { data, loading, error };
 };`}
+                usageCode={`function UserCard({ userId }) {
+  const { data: user, loading, error } =
+    useFetch(\`/api/users/\${userId}\`);
+
+  if (loading) return <Spinner />;
+  if (error) return <p>Error: {error.message}</p>;
+
+  return (
+    <div>
+      <h2>{user.name}</h2>
+      <p>{user.email}</p>
+      {/* Auto-aborts fetch if component unmounts */}
+    </div>
+  );
+}`}
               >
                 <UseFetchDemo />
               </HookCard>
             </div>
           )}
         </div>
-
-        {/* Section 3: Hooks #11-15 */}
-        <div className="mb-6">
-          <button
-            onClick={() => toggleSection(3)}
-            className="w-full"
-          >
-            <SectionHeader title="DOM & Browser APIs" range="#11-15" color="from-emerald-500 to-teal-500" />
-          </button>
-          {(expandedSection === 3 || expandedSection === null) && (
-            <div className="grid lg:grid-cols-2 gap-6">
-              <HookCard 
-                number={11} 
-                name="useScript" 
-                description="Dynamically load external scripts"
-                useCases={[
-                  "Load third-party payment SDKs",
-                  "Analytics scripts on demand",
-                  "Chat widget integration",
-                  "Social media share buttons",
-                  "Maps API lazy loading"
-                ]}
-                code={`const useScript = (src) => {
+        {/* Sections 3–6 temporarily hidden */}
+        {false && (
+          <>
+            {/* Section 3: Hooks #11-15 */}
+            <div className="mb-6">
+              <button onClick={() => toggleSection(3)} className="w-full">
+                <SectionHeader
+                  title="DOM & Browser APIs"
+                  range="#11-15"
+                  color="from-emerald-500 to-teal-500"
+                />
+              </button>
+              {(expandedSection === 3 || expandedSection === null) && (
+                <div className="grid lg:grid-cols-2 gap-6">
+                  <HookCard
+                    number={11}
+                    name="useScript"
+                    description="Dynamically load external scripts"
+                    useCases={[
+                      'Load third-party payment SDKs',
+                      'Analytics scripts on demand',
+                      'Chat widget integration',
+                      'Social media share buttons',
+                      'Maps API lazy loading',
+                    ]}
+                    code={`const useScript = (src) => {
   const [status, setStatus] = useState(src ? 'loading' : 'idle');
-  
+
   useEffect(() => {
     if (!src) return;
     let script = document.querySelector(\`script[src="\${src}"]\`);
@@ -2013,27 +2494,27 @@ export default function CustomHooksScreen() {
     script.addEventListener('load', () => setStatus('ready'));
     script.addEventListener('error', () => setStatus('error'));
   }, [src]);
-  
+
   return status;
 };`}
-              >
-                <UseScriptDemo />
-              </HookCard>
+                  >
+                    <UseScriptDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={12} 
-                name="useDeepCompareEffect" 
-                description="useEffect with deep equality check"
-                useCases={[
-                  "Complex object dependencies",
-                  "API response object comparison",
-                  "Filter/sort configuration objects",
-                  "Nested form state changes",
-                  "Query parameter object tracking"
-                ]}
-                code={`const useDeepCompareEffect = (callback, deps) => {
+                  <HookCard
+                    number={12}
+                    name="useDeepCompareEffect"
+                    description="useEffect with deep equality check"
+                    useCases={[
+                      'Complex object dependencies',
+                      'API response object comparison',
+                      'Filter/sort configuration objects',
+                      'Nested form state changes',
+                      'Query parameter object tracking',
+                    ]}
+                    code={`const useDeepCompareEffect = (callback, deps) => {
   const previousRef = useRef();
-  
+
   const deepEqual = (a, b) => {
     if (a === b) return true;
     if (typeof a !== typeof b) return false;
@@ -2042,65 +2523,68 @@ export default function CustomHooksScreen() {
     return keys.length === Object.keys(b).length &&
       keys.every(k => deepEqual(a[k], b[k]));
   };
-  
+
   if (!deepEqual(previousRef.current, deps)) {
     previousRef.current = deps;
   }
   useEffect(callback, [previousRef.current]);
 };`}
-              >
-                <div className="text-center py-4 text-gray-500">
-                  <Info className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                  <p className="text-sm">Useful when dependencies are objects/arrays that change reference but not value</p>
-                </div>
-              </HookCard>
+                  >
+                    <div className="text-center py-4 text-gray-500">
+                      <Info className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                      <p className="text-sm">
+                        Useful when dependencies are objects/arrays that change
+                        reference but not value
+                      </p>
+                    </div>
+                  </HookCard>
 
-              <HookCard 
-                number={13} 
-                name="useEventListener" 
-                description="Attach event listeners declaratively"
-                useCases={[
-                  "Global keyboard shortcuts",
-                  "Window scroll tracking",
-                  "Custom drag and drop",
-                  "Document click handling",
-                  "Resize event management"
-                ]}
-                code={`const useEventListener = (eventName, handler, element = window) => {
+                  <HookCard
+                    number={13}
+                    name="useEventListener"
+                    description="Attach event listeners declaratively"
+                    useCases={[
+                      'Global keyboard shortcuts',
+                      'Window scroll tracking',
+                      'Custom drag and drop',
+                      'Document click handling',
+                      'Resize event management',
+                    ]}
+                    code={`const useEventListener = (eventName, handler, element = window) => {
   const savedHandler = useRef(handler);
   useEffect(() => { savedHandler.current = handler; }, [handler]);
-  
+
   useEffect(() => {
     const targetElement = element?.current || element;
     if (!targetElement?.addEventListener) return;
-    
+
     const listener = (e) => savedHandler.current(e);
     targetElement.addEventListener(eventName, listener);
     return () => targetElement.removeEventListener(eventName, listener);
   }, [eventName, element]);
 };`}
-              >
-                <UseEventListenerDemo />
-              </HookCard>
+                  >
+                    <UseEventListenerDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={14} 
-                name="useOnScreen" 
-                description="Detect if element is visible in viewport"
-                useCases={[
-                  "Lazy load images/videos",
-                  "Infinite scroll pagination",
-                  "Trigger animations on scroll",
-                  "Track ad impressions",
-                  "Read progress indicators"
-                ]}
-                code={`const useOnScreen = (ref, rootMargin = '0px') => {
+                  <HookCard
+                    number={14}
+                    name="useOnScreen"
+                    description="Detect if element is visible in viewport"
+                    useCases={[
+                      'Lazy load images/videos',
+                      'Infinite scroll pagination',
+                      'Trigger animations on scroll',
+                      'Track ad impressions',
+                      'Read progress indicators',
+                    ]}
+                    code={`const useOnScreen = (ref, rootMargin = '0px') => {
   const [isIntersecting, setIntersecting] = useState(false);
-  
+
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
-    
+
     const observer = new IntersectionObserver(
       ([entry]) => setIntersecting(entry.isIntersecting),
       { rootMargin }
@@ -2108,30 +2592,30 @@ export default function CustomHooksScreen() {
     observer.observe(element);
     return () => observer.disconnect();
   }, [ref, rootMargin]);
-  
+
   return isIntersecting;
 };`}
-              >
-                <UseOnScreenDemo />
-              </HookCard>
+                  >
+                    <UseOnScreenDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={15} 
-                name="useWindowSize" 
-                description="Track window dimensions in real-time"
-                useCases={[
-                  "Responsive component rendering",
-                  "Canvas/chart size calculations",
-                  "Conditional mobile/desktop layouts",
-                  "Virtual list height calculation",
-                  "Image gallery column count"
-                ]}
-                code={`const useWindowSize = () => {
+                  <HookCard
+                    number={15}
+                    name="useWindowSize"
+                    description="Track window dimensions in real-time"
+                    useCases={[
+                      'Responsive component rendering',
+                      'Canvas/chart size calculations',
+                      'Conditional mobile/desktop layouts',
+                      'Virtual list height calculation',
+                      'Image gallery column count',
+                    ]}
+                    code={`const useWindowSize = () => {
   const [size, setSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight
   });
-  
+
   useEffect(() => {
     const handleResize = () => setSize({
       width: window.innerWidth,
@@ -2140,69 +2624,70 @@ export default function CustomHooksScreen() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  
+
   return size;
 };`}
-              >
-                <UseWindowSizeDemo />
-              </HookCard>
+                  >
+                    <UseWindowSizeDemo />
+                  </HookCard>
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Section 4: Hooks #16-20 */}
-        <div className="mb-6">
-          <button
-            onClick={() => toggleSection(4)}
-            className="w-full"
-          >
-            <SectionHeader title="Responsive & Validation" range="#16-20" color="from-amber-500 to-orange-500" />
-          </button>
-          {(expandedSection === 4 || expandedSection === null) && (
-            <div className="grid lg:grid-cols-2 gap-6">
-              <HookCard 
-                number={16} 
-                name="useMediaQuery" 
-                description="React to CSS media query changes"
-                useCases={[
-                  "Responsive component variants",
-                  "Show/hide mobile navigation",
-                  "Dark mode detection",
-                  "Print layout adjustments",
-                  "Touch vs mouse interaction mode"
-                ]}
-                code={`const useMediaQuery = (query) => {
+            {/* Section 4: Hooks #16-20 */}
+            <div className="mb-6">
+              <button onClick={() => toggleSection(4)} className="w-full">
+                <SectionHeader
+                  title="Responsive & Validation"
+                  range="#16-20"
+                  color="from-amber-500 to-orange-500"
+                />
+              </button>
+              {(expandedSection === 4 || expandedSection === null) && (
+                <div className="grid lg:grid-cols-2 gap-6">
+                  <HookCard
+                    number={16}
+                    name="useMediaQuery"
+                    description="React to CSS media query changes"
+                    useCases={[
+                      'Responsive component variants',
+                      'Show/hide mobile navigation',
+                      'Dark mode detection',
+                      'Print layout adjustments',
+                      'Touch vs mouse interaction mode',
+                    ]}
+                    code={`const useMediaQuery = (query) => {
   const [matches, setMatches] = useState(
     () => window.matchMedia(query).matches
   );
-  
+
   useEffect(() => {
     const mediaQuery = window.matchMedia(query);
     const handler = (e) => setMatches(e.matches);
     mediaQuery.addEventListener('change', handler);
     return () => mediaQuery.removeEventListener('change', handler);
   }, [query]);
-  
+
   return matches;
 };`}
-              >
-                <UseMediaQueryDemo />
-              </HookCard>
+                  >
+                    <UseMediaQueryDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={17} 
-                name="useGeolocation" 
-                description="Access browser geolocation API"
-                useCases={[
-                  "Store locator features",
-                  "Weather app location detection",
-                  "Location-based recommendations",
-                  "Tracking fitness activities",
-                  "Delivery address auto-fill"
-                ]}
-                code={`const useGeolocation = (options = {}) => {
+                  <HookCard
+                    number={17}
+                    name="useGeolocation"
+                    description="Access browser geolocation API"
+                    useCases={[
+                      'Store locator features',
+                      'Weather app location detection',
+                      'Location-based recommendations',
+                      'Tracking fitness activities',
+                      'Delivery address auto-fill',
+                    ]}
+                    code={`const useGeolocation = (options = {}) => {
   const [state, setState] = useState({ loading: true, ... });
-  
+
   useEffect(() => {
     const onSuccess = (pos) => setState({
       loading: false,
@@ -2211,193 +2696,196 @@ export default function CustomHooksScreen() {
       ...
     });
     const onError = (err) => setState(s => ({ ...s, error: err }));
-    
+
     navigator.geolocation.getCurrentPosition(onSuccess, onError);
     const id = navigator.geolocation.watchPosition(onSuccess, onError);
     return () => navigator.geolocation.clearWatch(id);
   }, []);
-  
+
   return state;
 };`}
-              >
-                <UseGeolocationDemo />
-              </HookCard>
+                  >
+                    <UseGeolocationDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={18} 
-                name="useStateWithValidation" 
-                description="State with built-in validation feedback"
-                useCases={[
-                  "Email/password field validation",
-                  "Real-time input format checking",
-                  "Age/date range validation",
-                  "Username availability feedback",
-                  "Credit card number validation"
-                ]}
-                code={`const useStateWithValidation = (validationFunc, initialValue) => {
+                  <HookCard
+                    number={18}
+                    name="useStateWithValidation"
+                    description="State with built-in validation feedback"
+                    useCases={[
+                      'Email/password field validation',
+                      'Real-time input format checking',
+                      'Age/date range validation',
+                      'Username availability feedback',
+                      'Credit card number validation',
+                    ]}
+                    code={`const useStateWithValidation = (validationFunc, initialValue) => {
   const [value, setValue] = useState(initialValue);
   const [isValid, setIsValid] = useState(() => validationFunc(initialValue));
-  
+
   const onChange = useCallback((nextValue) => {
-    const newValue = typeof nextValue === 'function' 
+    const newValue = typeof nextValue === 'function'
       ? nextValue(value) : nextValue;
     setValue(newValue);
     setIsValid(validationFunc(newValue));
   }, [validationFunc, value]);
-  
+
   return [value, onChange, isValid];
 };`}
-              >
-                <UseStateWithValidationDemo />
-              </HookCard>
+                  >
+                    <UseStateWithValidationDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={19} 
-                name="useSize" 
-                description="Track element dimensions with ResizeObserver"
-                useCases={[
-                  "Responsive text truncation",
-                  "Dynamic chart/graph sizing",
-                  "Sidebar collapse detection",
-                  "Tooltip/popover positioning",
-                  "Image aspect ratio adjustments"
-                ]}
-                code={`const useSize = (ref) => {
+                  <HookCard
+                    number={19}
+                    name="useSize"
+                    description="Track element dimensions with ResizeObserver"
+                    useCases={[
+                      'Responsive text truncation',
+                      'Dynamic chart/graph sizing',
+                      'Sidebar collapse detection',
+                      'Tooltip/popover positioning',
+                      'Image aspect ratio adjustments',
+                    ]}
+                    code={`const useSize = (ref) => {
   const [size, setSize] = useState({ width: 0, height: 0 });
-  
+
   useEffect(() => {
     if (!ref.current) return;
-    
+
     const observer = new ResizeObserver(([entry]) => {
       setSize({
         width: entry.contentRect.width,
         height: entry.contentRect.height
       });
     });
-    
+
     observer.observe(ref.current);
     return () => observer.disconnect();
   }, [ref]);
-  
+
   return size;
 };`}
-              >
-                <UseSizeDemo />
-              </HookCard>
+                  >
+                    <UseSizeDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={20} 
-                name="useEffectOnce" 
-                description="Run effect only once (StrictMode safe)"
-                useCases={[
-                  "One-time analytics initialization",
-                  "Initial data fetch on mount",
-                  "Single welcome modal display",
-                  "Socket connection setup",
-                  "Third-party library initialization"
-                ]}
-                code={`const useEffectOnce = (callback) => {
+                  <HookCard
+                    number={20}
+                    name="useEffectOnce"
+                    description="Run effect only once (StrictMode safe)"
+                    useCases={[
+                      'One-time analytics initialization',
+                      'Initial data fetch on mount',
+                      'Single welcome modal display',
+                      'Socket connection setup',
+                      'Third-party library initialization',
+                    ]}
+                    code={`const useEffectOnce = (callback) => {
   const hasRun = useRef(false);
-  
+
   useEffect(() => {
     if (hasRun.current) return;
     hasRun.current = true;
     return callback();
   }, []);
 };`}
-              >
-                <div className="text-center py-4 text-gray-500">
-                  <Play className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                  <p className="text-sm">Runs callback only once, even in React StrictMode</p>
+                  >
+                    <div className="text-center py-4 text-gray-500">
+                      <Play className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                      <p className="text-sm">
+                        Runs callback only once, even in React StrictMode
+                      </p>
+                    </div>
+                  </HookCard>
                 </div>
-              </HookCard>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Section 5: Hooks #21-25 */}
-        <div className="mb-6">
-          <button
-            onClick={() => toggleSection(5)}
-            className="w-full"
-          >
-            <SectionHeader title="UI Interactions" range="#21-25" color="from-pink-500 to-rose-500" />
-          </button>
-          {(expandedSection === 5 || expandedSection === null) && (
-            <div className="grid lg:grid-cols-2 gap-6">
-              <HookCard 
-                number={21} 
-                name="useClickOutside" 
-                description="Detect clicks outside an element"
-                useCases={[
-                  "Close dropdown menus",
-                  "Dismiss modal dialogs",
-                  "Close popover tooltips",
-                  "Deselect items in editors",
-                  "Cancel inline edit mode"
-                ]}
-                code={`const useClickOutside = (ref, handler) => {
+            {/* Section 5: Hooks #21-25 */}
+            <div className="mb-6">
+              <button onClick={() => toggleSection(5)} className="w-full">
+                <SectionHeader
+                  title="UI Interactions"
+                  range="#21-25"
+                  color="from-pink-500 to-rose-500"
+                />
+              </button>
+              {(expandedSection === 5 || expandedSection === null) && (
+                <div className="grid lg:grid-cols-2 gap-6">
+                  <HookCard
+                    number={21}
+                    name="useClickOutside"
+                    description="Detect clicks outside an element"
+                    useCases={[
+                      'Close dropdown menus',
+                      'Dismiss modal dialogs',
+                      'Close popover tooltips',
+                      'Deselect items in editors',
+                      'Cancel inline edit mode',
+                    ]}
+                    code={`const useClickOutside = (ref, handler) => {
   useEffect(() => {
     const listener = (event) => {
       if (!ref.current || ref.current.contains(event.target)) return;
       handler(event);
     };
-    
+
     document.addEventListener('mousedown', listener);
     document.addEventListener('touchstart', listener);
-    
+
     return () => {
       document.removeEventListener('mousedown', listener);
       document.removeEventListener('touchstart', listener);
     };
   }, [ref, handler]);
 };`}
-              >
-                <UseClickOutsideDemo />
-              </HookCard>
+                  >
+                    <UseClickOutsideDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={22} 
-                name="useDarkMode" 
-                description="Toggle dark mode with system preference"
-                useCases={[
-                  "App-wide theme switching",
-                  "Respect OS color preference",
-                  "Persist user theme choice",
-                  "Code editor themes",
-                  "UI component theme variants"
-                ]}
-                code={`const useDarkMode = () => {
+                  <HookCard
+                    number={22}
+                    name="useDarkMode"
+                    description="Toggle dark mode with system preference"
+                    useCases={[
+                      'App-wide theme switching',
+                      'Respect OS color preference',
+                      'Persist user theme choice',
+                      'Code editor themes',
+                      'UI component theme variants',
+                    ]}
+                    code={`const useDarkMode = () => {
   const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
   const [darkMode, setDarkMode] = useStorage('dark-mode', prefersDark);
-  
+
   const toggle = useCallback(() => setDarkMode(p => !p), [setDarkMode]);
-  
+
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
   }, [darkMode]);
-  
+
   return [darkMode, toggle, setDarkMode];
 };`}
-              >
-                <UseDarkModeDemo />
-              </HookCard>
+                  >
+                    <UseDarkModeDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={23} 
-                name="useCopyToClipboard" 
-                description="Copy text to clipboard with feedback"
-                useCases={[
-                  "Copy code snippets",
-                  "Share referral links",
-                  "Copy API keys/tokens",
-                  "Email address copying",
-                  "Copy-to-clipboard buttons"
-                ]}
-                code={`const useCopyToClipboard = () => {
+                  <HookCard
+                    number={23}
+                    name="useCopyToClipboard"
+                    description="Copy text to clipboard with feedback"
+                    useCases={[
+                      'Copy code snippets',
+                      'Share referral links',
+                      'Copy API keys/tokens',
+                      'Email address copying',
+                      'Copy-to-clipboard buttons',
+                    ]}
+                    code={`const useCopyToClipboard = () => {
   const [copiedText, setCopiedText] = useState(null);
   const [error, setError] = useState(null);
-  
+
   const copy = useCallback(async (text) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -2410,25 +2898,25 @@ export default function CustomHooksScreen() {
       return false;
     }
   }, []);
-  
+
   return { copiedText, copy, error };
 };`}
-              >
-                <UseCopyToClipboardDemo />
-              </HookCard>
+                  >
+                    <UseCopyToClipboardDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={24} 
-                name="useCookie" 
-                description="Read, write, and delete cookies"
-                useCases={[
-                  "User preference storage",
-                  "Session tracking tokens",
-                  "A/B testing flags",
-                  "Consent/GDPR management",
-                  "Shopping cart persistence"
-                ]}
-                code={`const useCookie = (name, defaultValue) => {
+                  <HookCard
+                    number={24}
+                    name="useCookie"
+                    description="Read, write, and delete cookies"
+                    useCases={[
+                      'User preference storage',
+                      'Session tracking tokens',
+                      'A/B testing flags',
+                      'Consent/GDPR management',
+                      'Shopping cart persistence',
+                    ]}
+                    code={`const useCookie = (name, defaultValue) => {
   const getCookie = useCallback(() => {
     const cookies = document.cookie.split(';');
     for (const cookie of cookies) {
@@ -2437,33 +2925,33 @@ export default function CustomHooksScreen() {
     }
     return defaultValue;
   }, [name, defaultValue]);
-  
+
   const [value, setValue] = useState(getCookie);
-  
+
   const setCookie = useCallback((newValue, { days = 7 } = {}) => {
     const expires = new Date(Date.now() + days * 864e5).toUTCString();
     document.cookie = \`\${name}=\${encodeURIComponent(newValue)}; expires=\${expires}\`;
     setValue(newValue);
   }, [name]);
-  
+
   return [value, setCookie, () => { /* delete cookie */ }];
 };`}
-              >
-                <UseCookieDemo />
-              </HookCard>
+                  >
+                    <UseCookieDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={25} 
-                name="useTranslation" 
-                description="Simple i18n translation hook"
-                useCases={[
-                  "Multi-language website support",
-                  "Dynamic content localization",
-                  "Language switcher implementation",
-                  "Localized date/number formatting",
-                  "RTL/LTR layout switching"
-                ]}
-                code={`const translations = {
+                  <HookCard
+                    number={25}
+                    name="useTranslation"
+                    description="Simple i18n translation hook"
+                    useCases={[
+                      'Multi-language website support',
+                      'Dynamic content localization',
+                      'Language switcher implementation',
+                      'Localized date/number formatting',
+                      'RTL/LTR layout switching',
+                    ]}
+                    code={`const translations = {
   en: { greeting: 'Hello', farewell: 'Goodbye' },
   es: { greeting: 'Hola', farewell: 'Adiós' },
   // ... more languages
@@ -2471,99 +2959,100 @@ export default function CustomHooksScreen() {
 
 const useTranslation = (initialLang = 'en') => {
   const [language, setLanguage] = useState(initialLang);
-  
+
   const t = useCallback((key) => {
     return translations[language]?.[key] || key;
   }, [language]);
-  
+
   return { t, language, setLanguage, languages: Object.keys(translations) };
 };`}
-              >
-                <UseTranslationDemo />
-              </HookCard>
+                  >
+                    <UseTranslationDemo />
+                  </HookCard>
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Section 6: Hooks #26-30 */}
-        <div className="mb-6">
-          <button
-            onClick={() => toggleSection(6)}
-            className="w-full"
-          >
-            <SectionHeader title="Debug & Advanced" range="#26-30" color="from-red-500 to-pink-500" />
-          </button>
-          {(expandedSection === 6 || expandedSection === null) && (
-            <div className="grid lg:grid-cols-2 gap-6">
-              <HookCard 
-                number={26} 
-                name="useOnlineStatus" 
-                description="Track browser online/offline status"
-                useCases={[
-                  "Offline-first app functionality",
-                  "Show connection status banner",
-                  "Queue actions while offline",
-                  "Sync data when back online",
-                  "Disable network-dependent features"
-                ]}
-                code={`const useOnlineStatus = () => {
+            {/* Section 6: Hooks #26-30 */}
+            <div className="mb-6">
+              <button onClick={() => toggleSection(6)} className="w-full">
+                <SectionHeader
+                  title="Debug & Advanced"
+                  range="#26-30"
+                  color="from-red-500 to-pink-500"
+                />
+              </button>
+              {(expandedSection === 6 || expandedSection === null) && (
+                <div className="grid lg:grid-cols-2 gap-6">
+                  <HookCard
+                    number={26}
+                    name="useOnlineStatus"
+                    description="Track browser online/offline status"
+                    useCases={[
+                      'Offline-first app functionality',
+                      'Show connection status banner',
+                      'Queue actions while offline',
+                      'Sync data when back online',
+                      'Disable network-dependent features',
+                    ]}
+                    code={`const useOnlineStatus = () => {
   const [online, setOnline] = useState(navigator.onLine);
-  
+
   useEffect(() => {
     const handleOnline = () => setOnline(true);
     const handleOffline = () => setOnline(false);
-    
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
-  
+
   return online;
 };`}
-              >
-                <UseOnlineStatusDemo />
-              </HookCard>
+                  >
+                    <UseOnlineStatusDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={27} 
-                name="useRenderCount" 
-                description="Count component re-renders"
-                useCases={[
-                  "Performance debugging",
-                  "Identify unnecessary renders",
-                  "Development-only logging",
-                  "Optimize memo usage",
-                  "Track state change frequency"
-                ]}
-                code={`const useRenderCount = () => {
+                  <HookCard
+                    number={27}
+                    name="useRenderCount"
+                    description="Count component re-renders"
+                    useCases={[
+                      'Performance debugging',
+                      'Identify unnecessary renders',
+                      'Development-only logging',
+                      'Optimize memo usage',
+                      'Track state change frequency',
+                    ]}
+                    code={`const useRenderCount = () => {
   const count = useRef(0);
   count.current++;
   return count.current;
 };`}
-              >
-                <UseRenderCountDemo />
-              </HookCard>
+                  >
+                    <UseRenderCountDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={28} 
-                name="useDebugInformation" 
-                description="Debug component props and renders"
-                useCases={[
-                  "Debug prop changes causing re-renders",
-                  "Identify performance bottlenecks",
-                  "Development logging and tracing",
-                  "Track which props update frequently",
-                  "Analyze component lifecycle behavior"
-                ]}
-                code={`const useDebugInformation = (componentName, props) => {
+                  <HookCard
+                    number={28}
+                    name="useDebugInformation"
+                    description="Debug component props and renders"
+                    useCases={[
+                      'Debug prop changes causing re-renders',
+                      'Identify performance bottlenecks',
+                      'Development logging and tracing',
+                      'Track which props update frequently',
+                      'Analyze component lifecycle behavior',
+                    ]}
+                    code={`const useDebugInformation = (componentName, props) => {
   const count = useRenderCount();
   const changedProps = useRef({});
   const previousProps = useRef(props);
-  
+
   const propKeys = Object.keys({ ...previousProps.current, ...props });
   changedProps.current = propKeys.reduce((obj, key) => {
     if (props[key] !== previousProps.current[key]) {
@@ -2571,92 +3060,94 @@ const useTranslation = (initialLang = 'en') => {
     }
     return obj;
   }, {});
-  
+
   useEffect(() => {
     previousProps.current = props;
     console.log(\`[\${componentName}]\`, { count, changedProps: changedProps.current });
   });
-  
+
   return { count, changedProps: changedProps.current, ... };
 };`}
-              >
-                <UseDebugInformationDemo />
-              </HookCard>
+                  >
+                    <UseDebugInformationDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={29} 
-                name="useHover" 
-                description="Track element hover state"
-                useCases={[
-                  "Show/hide tooltips",
-                  "Hover effect animations",
-                  "Preview cards on hover",
-                  "Interactive image galleries",
-                  "Menu item highlighting"
-                ]}
-                code={`const useHover = (ref) => {
+                  <HookCard
+                    number={29}
+                    name="useHover"
+                    description="Track element hover state"
+                    useCases={[
+                      'Show/hide tooltips',
+                      'Hover effect animations',
+                      'Preview cards on hover',
+                      'Interactive image galleries',
+                      'Menu item highlighting',
+                    ]}
+                    code={`const useHover = (ref) => {
   const [hovered, setHovered] = useState(false);
-  
+
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
-    
+
     const handleEnter = () => setHovered(true);
     const handleLeave = () => setHovered(false);
-    
+
     element.addEventListener('mouseenter', handleEnter);
     element.addEventListener('mouseleave', handleLeave);
-    
+
     return () => {
       element.removeEventListener('mouseenter', handleEnter);
       element.removeEventListener('mouseleave', handleLeave);
     };
   }, [ref]);
-  
+
   return hovered;
 };`}
-              >
-                <UseHoverDemo />
-              </HookCard>
+                  >
+                    <UseHoverDemo />
+                  </HookCard>
 
-              <HookCard 
-                number={30} 
-                name="useLongPress" 
-                description="Detect long press gestures"
-                useCases={[
-                  "Context menus on mobile",
-                  "Delete confirmation actions",
-                  "Quick action shortcuts",
-                  "Drag initiation trigger",
-                  "Multi-select mode toggle"
-                ]}
-                code={`const useLongPress = (callback, { threshold = 500 } = {}) => {
+                  <HookCard
+                    number={30}
+                    name="useLongPress"
+                    description="Detect long press gestures"
+                    useCases={[
+                      'Context menus on mobile',
+                      'Delete confirmation actions',
+                      'Quick action shortcuts',
+                      'Drag initiation trigger',
+                      'Multi-select mode toggle',
+                    ]}
+                    code={`const useLongPress = (callback, { threshold = 500 } = {}) => {
   const timerRef = useRef(null);
   const isPressed = useRef(false);
-  
+
   const start = useCallback((event) => {
     if (isPressed.current) return;
     isPressed.current = true;
     timerRef.current = setTimeout(() => callback(event), threshold);
   }, [callback, threshold]);
-  
+
   const cancel = useCallback(() => {
     clearTimeout(timerRef.current);
     isPressed.current = false;
   }, []);
-  
+
   return {
     onMouseDown: start, onMouseUp: cancel, onMouseLeave: cancel,
     onTouchStart: start, onTouchEnd: cancel
   };
 };`}
-              >
-                <UseLongPressDemo />
-              </HookCard>
+                  >
+                    <UseLongPressDemo />
+                  </HookCard>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-
+          </>
+        )}{' '}
+        {/* end hidden sections */}
         {/* Key Takeaways */}
         <div className="bg-linear-to-r from-purple-500 to-indigo-500 text-white rounded-xl p-6 mt-8">
           <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
