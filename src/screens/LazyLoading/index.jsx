@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import DemoNavigation from '../../components/DemoNavigation';
 import {
@@ -10,7 +10,6 @@ import {
   AlertTriangle,
   CheckCircle,
   XCircle,
-  Code,
   Lightbulb,
   TrendingDown,
   TrendingUp,
@@ -104,203 +103,189 @@ function LoadingFallback({ name, icon: Icon }) {
   );
 }
 
-// ========================================
-// With Lazy Loading Demo
-// ========================================
-function WithLazyLoading() {
-  const [showChart, setShowChart] = useState(false);
-  const [showEditor, setShowEditor] = useState(false);
-  const [show3D, setShow3D] = useState(false);
+// Fires onLoaded callback once when sibling lazy component resolves inside Suspense
+function OnLoad({ callback }) {
+  useEffect(() => { callback(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  return null;
+}
 
-  return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div className="bg-green-500 px-6 py-4">
-        <div className="flex items-center gap-3">
-          <CheckCircle className="w-6 h-6 text-white" />
-          <h3 className="text-xl font-bold text-white">With Lazy Loading</h3>
-        </div>
-      </div>
-
-      <div className="p-6">
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-          <div className="flex items-start gap-3 mb-3">
-            <TrendingDown className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-green-800 font-medium">Initial bundle: Only essential code loaded first</p>
-              <p className="text-green-700 text-sm mt-1">Other components load when needed</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-4 gap-2 text-sm">
-            <div className="bg-white p-3 rounded-lg text-center border-2 border-green-300">
-              <p className="font-bold text-green-600 text-lg">50KB</p>
-              <p className="text-gray-500 text-xs">Main App</p>
-              <span className="text-[10px] bg-green-100 text-green-700 px-1.5 rounded mt-1 inline-block">Loaded</span>
-            </div>
-            <div className="bg-white p-3 rounded-lg text-center opacity-60">
-              <p className="font-bold text-gray-400 text-lg">150KB</p>
-              <p className="text-gray-400 text-xs">Chart</p>
-              <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 rounded mt-1 inline-block">Deferred</span>
-            </div>
-            <div className="bg-white p-3 rounded-lg text-center opacity-60">
-              <p className="font-bold text-gray-400 text-lg">200KB</p>
-              <p className="text-gray-400 text-xs">Editor</p>
-              <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 rounded mt-1 inline-block">Deferred</span>
-            </div>
-            <div className="bg-white p-3 rounded-lg text-center opacity-60">
-              <p className="font-bold text-gray-400 text-lg">500KB</p>
-              <p className="text-gray-400 text-xs">3D</p>
-              <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 rounded mt-1 inline-block">Deferred</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-3 mb-6">
-          <button
-            onClick={() => setShowChart(!showChart)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
-              showChart 
-                ? 'bg-green-500 text-white shadow-lg' 
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-            }`}
-          >
-            <BarChart3 className="w-4 h-4" />
-            {showChart ? 'Hide' : 'Load'} Chart
-          </button>
-          <button
-            onClick={() => setShowEditor(!showEditor)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
-              showEditor 
-                ? 'bg-green-500 text-white shadow-lg' 
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-            }`}
-          >
-            <FileEdit className="w-4 h-4" />
-            {showEditor ? 'Hide' : 'Load'} Editor
-          </button>
-          <button
-            onClick={() => setShow3D(!show3D)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
-              show3D 
-                ? 'bg-green-500 text-white shadow-lg' 
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-            }`}
-          >
-            <Box className="w-4 h-4" />
-            {show3D ? 'Hide' : 'Load'} 3D Viewer
-          </button>
-        </div>
-
-        <div className="space-y-4">
-          {showChart && (
-            <Suspense fallback={<LoadingFallback name="Chart" icon={BarChart3} />}>
-              <LazyChart />
-            </Suspense>
-          )}
-          {showEditor && (
-            <Suspense fallback={<LoadingFallback name="Editor" icon={FileEdit} />}>
-              <LazyEditor />
-            </Suspense>
-          )}
-          {show3D && (
-            <Suspense fallback={<LoadingFallback name="3D Viewer" icon={Box} />}>
-              <Lazy3DViewer />
-            </Suspense>
-          )}
-          
-          {!showChart && !showEditor && !show3D && (
-            <div className="text-center py-8 text-gray-500">
-              <Download className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-              <p>Click buttons above to load components on demand</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+// ── Shared badge shown on each lazy-loadable chunk ────────────────────────
+function Badge({ loaded }) {
+  return loaded ? (
+    <span className="text-[10px] bg-green-100 text-green-700 px-1.5 rounded mt-1 inline-flex items-center gap-0.5">
+      <CheckCircle className="w-2.5 h-2.5" /> Loaded
+    </span>
+  ) : (
+    <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 rounded mt-1 inline-block">Deferred</span>
   );
 }
 
-// ========================================
-// Without Lazy Loading Demo
-// ========================================
-function WithoutLazyLoading() {
-  const [showDemo, setShowDemo] = useState(false);
+// ── Demo: With Lazy Loading (inner content only) ────────────────────────────
+function LazyLoadDemo() {
+  const [showChart, setShowChart] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
+  const [show3D, setShow3D] = useState(false);
+  const [chartLoaded, setChartLoaded] = useState(false);
+  const [editorLoaded, setEditorLoaded] = useState(false);
+  const [viewer3dLoaded, setViewer3dLoaded] = useState(false);
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div className="bg-red-500 px-6 py-4">
-        <div className="flex items-center gap-3">
-          <XCircle className="w-6 h-6 text-white" />
-          <h3 className="text-xl font-bold text-white">Without Lazy Loading</h3>
+    <>
+      <div className="flex items-start gap-2 p-3 bg-green-900/30 rounded-lg border border-green-500/30 mb-4">
+        <CheckCircle className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+        <p className="text-green-300 text-xs">
+          <strong>Initial bundle: only 50 KB.</strong> Each component loads on demand — click a button to fetch it. The badge turns green once it resolves.
+        </p>
+      </div>
+
+      {/* Bundle size indicator */}
+      <div className="grid grid-cols-4 gap-2 text-sm mb-4">
+        <div className="bg-gray-800 p-2.5 rounded-lg text-center border-2 border-green-500">
+          <p className="font-bold text-green-400 text-base">50KB</p>
+          <p className="text-gray-400 text-xs">Main App</p>
+          <span className="text-[10px] bg-green-900/50 text-green-400 px-1.5 rounded mt-1 inline-flex items-center gap-0.5">
+            <CheckCircle className="w-2.5 h-2.5" /> Loaded
+          </span>
+        </div>
+        <div className={`bg-gray-800 p-2.5 rounded-lg text-center border ${chartLoaded ? 'border-green-500' : 'border-gray-600 opacity-60'}`}>
+          <p className={`font-bold text-base ${chartLoaded ? 'text-green-400' : 'text-gray-400'}`}>150KB</p>
+          <p className="text-gray-400 text-xs">Chart</p>
+          <Badge loaded={chartLoaded} />
+        </div>
+        <div className={`bg-gray-800 p-2.5 rounded-lg text-center border ${editorLoaded ? 'border-green-500' : 'border-gray-600 opacity-60'}`}>
+          <p className={`font-bold text-base ${editorLoaded ? 'text-green-400' : 'text-gray-400'}`}>200KB</p>
+          <p className="text-gray-400 text-xs">Editor</p>
+          <Badge loaded={editorLoaded} />
+        </div>
+        <div className={`bg-gray-800 p-2.5 rounded-lg text-center border ${viewer3dLoaded ? 'border-green-500' : 'border-gray-600 opacity-60'}`}>
+          <p className={`font-bold text-base ${viewer3dLoaded ? 'text-green-400' : 'text-gray-400'}`}>500KB</p>
+          <p className="text-gray-400 text-xs">3D</p>
+          <Badge loaded={viewer3dLoaded} />
         </div>
       </div>
 
-      <div className="p-6">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-          <div className="flex items-start gap-3 mb-3">
-            <TrendingUp className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-red-800 font-medium">Initial bundle: Everything loaded upfront</p>
-              <p className="text-red-700 text-sm mt-1">User waits for all code to download</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-4 gap-2 text-sm">
-            <div className="bg-white p-3 rounded-lg text-center border border-red-200">
-              <p className="font-bold text-red-600 text-lg">50KB</p>
-              <p className="text-gray-500 text-xs">Main App</p>
-            </div>
-            <div className="bg-white p-3 rounded-lg text-center border border-red-200">
-              <p className="font-bold text-red-600 text-lg">150KB</p>
-              <p className="text-gray-500 text-xs">Chart</p>
-            </div>
-            <div className="bg-white p-3 rounded-lg text-center border border-red-200">
-              <p className="font-bold text-red-600 text-lg">200KB</p>
-              <p className="text-gray-500 text-xs">Editor</p>
-            </div>
-            <div className="bg-white p-3 rounded-lg text-center border border-red-200">
-              <p className="font-bold text-red-600 text-lg">500KB</p>
-              <p className="text-gray-500 text-xs">3D</p>
-            </div>
-          </div>
-          <div className="mt-4 text-center">
-            <span className="inline-flex items-center gap-2 bg-red-200 text-red-800 px-4 py-2 rounded-full font-bold">
-              <AlertTriangle className="w-4 h-4" />
-              Total: 900KB loaded on first visit
-            </span>
-          </div>
-        </div>
-
+      <div className="flex flex-wrap gap-2 mb-4">
         <button
-          onClick={() => setShowDemo(!showDemo)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+          onClick={() => setShowChart(!showChart)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            showChart ? 'bg-green-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+          }`}
         >
-          {showDemo ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          {showDemo ? 'Hide' : 'Show'} Components
+          <BarChart3 className="w-3 h-3" />
+          {showChart ? 'Hide' : 'Load'} Chart
         </button>
+        <button
+          onClick={() => setShowEditor(!showEditor)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            showEditor ? 'bg-green-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+          }`}
+        >
+          <FileEdit className="w-3 h-3" />
+          {showEditor ? 'Hide' : 'Load'} Editor
+        </button>
+        <button
+          onClick={() => setShow3D(!show3D)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            show3D ? 'bg-green-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+          }`}
+        >
+          <Box className="w-3 h-3" />
+          {show3D ? 'Hide' : 'Load'} 3D
+        </button>
+      </div>
 
-        {showDemo && (
-          <div className="mt-4 space-y-3">
-            <div className="bg-red-100 rounded-lg p-4 flex items-center gap-4 border border-red-200">
-              <div className="w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center">
-                <BarChart3 className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="font-medium text-gray-800">Chart Component</p>
-                <p className="text-sm text-red-600">Always bundled (150KB wasted if unused)</p>
-              </div>
-            </div>
-            <div className="bg-red-100 rounded-lg p-4 flex items-center gap-4 border border-red-200">
-              <div className="w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center">
-                <FileEdit className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="font-medium text-gray-800">Code Editor</p>
-                <p className="text-sm text-red-600">Always bundled (200KB wasted if unused)</p>
-              </div>
-            </div>
+      <div className="space-y-3">
+        {showChart && (
+          <Suspense fallback={<LoadingFallback name="Chart" icon={BarChart3} />}>
+            <LazyChart />
+            {!chartLoaded && <OnLoad callback={() => setChartLoaded(true)} />}
+          </Suspense>
+        )}
+        {showEditor && (
+          <Suspense fallback={<LoadingFallback name="Editor" icon={FileEdit} />}>
+            <LazyEditor />
+            {!editorLoaded && <OnLoad callback={() => setEditorLoaded(true)} />}
+          </Suspense>
+        )}
+        {show3D && (
+          <Suspense fallback={<LoadingFallback name="3D Viewer" icon={Box} />}>
+            <Lazy3DViewer />
+            {!viewer3dLoaded && <OnLoad callback={() => setViewer3dLoaded(true)} />}
+          </Suspense>
+        )}
+        {!showChart && !showEditor && !show3D && (
+          <div className="text-center py-6 text-gray-500">
+            <Download className="w-10 h-10 mx-auto mb-2 text-gray-600" />
+            <p className="text-xs">Click a button above to load components on demand</p>
           </div>
         )}
       </div>
-    </div>
+    </>
+  );
+}
+
+// ── Demo: Without Lazy Loading (inner content only) ─────────────────────────
+function EagerLoadDemo() {
+  const [showDemo, setShowDemo] = useState(false);
+
+  return (
+    <>
+      <div className="flex items-start gap-2 p-3 bg-red-900/30 rounded-lg border border-red-500/30 mb-4">
+        <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+        <p className="text-red-300 text-xs">
+          <strong>All 900 KB downloads on the first visit</strong> — including components the user may never open. The page stays blank until the entire bundle finishes.
+        </p>
+      </div>
+
+      {/* Bundle size indicator */}
+      <div className="grid grid-cols-4 gap-2 text-sm mb-4">
+        {[
+          { size: '50KB', label: 'Main App' },
+          { size: '150KB', label: 'Chart' },
+          { size: '200KB', label: 'Editor' },
+          { size: '500KB', label: '3D' },
+        ].map(({ size, label }) => (
+          <div key={label} className="bg-gray-800 p-2.5 rounded-lg text-center border border-red-500/40">
+            <p className="font-bold text-red-400 text-base">{size}</p>
+            <p className="text-gray-400 text-xs">{label}</p>
+          </div>
+        ))}
+      </div>
+      <div className="text-center mb-4">
+        <span className="inline-flex items-center gap-1.5 bg-red-900/40 text-red-300 px-3 py-1.5 rounded-full text-xs font-bold border border-red-500/30">
+          <AlertTriangle className="w-3 h-3" />
+          Total: 900 KB on first visit
+        </span>
+      </div>
+
+      <button
+        onClick={() => setShowDemo(!showDemo)}
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-medium transition-colors mb-3"
+      >
+        {showDemo ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+        {showDemo ? 'Hide' : 'Show'} Components
+      </button>
+
+      {showDemo && (
+        <div className="space-y-2">
+          {[
+            { Icon: BarChart3, label: 'Chart Component', note: '150KB wasted if unused' },
+            { Icon: FileEdit, label: 'Code Editor', note: '200KB wasted if unused' },
+            { Icon: Box, label: '3D Viewer', note: '500KB wasted if unused' },
+          ].map((item) => (
+            <div key={item.label} className="bg-red-900/20 rounded-lg p-3 flex items-center gap-3 border border-red-500/20">
+              <div className="w-9 h-9 rounded-full bg-red-500 text-white flex items-center justify-center shrink-0">
+                <item.Icon className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="font-medium text-gray-200 text-sm">{item.label}</p>
+                <p className="text-xs text-red-400">{item.note}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 
@@ -313,7 +298,7 @@ export default function LazyLoadingScreen() {
         {/* Introduction */}
         <div className="bg-linear-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-6 mb-8">
           <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-xl bg-purple-500 text-white flex items-center justify-center flex-shrink-0">
+            <div className="w-14 h-14 rounded-xl bg-purple-500 text-white flex items-center justify-center shrink-0">
               <SplitSquareVertical className="w-7 h-7" />
             </div>
             <div>
@@ -381,47 +366,134 @@ export default function LazyLoadingScreen() {
           </div>
         </div>
 
-        {/* Demos */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
-          <WithLazyLoading />
-          <WithoutLazyLoading />
-        </div>
+        {/* ── Side-by-side dark panels ── */}
+        <div className="flex flex-col lg:flex-row gap-6 mb-8">
 
-        {/* Code Example */}
-        <div className="bg-gray-900 rounded-xl overflow-hidden mb-8">
-          <div className="bg-gray-800 px-6 py-4">
-            <div className="flex items-center gap-3">
-              <Code className="w-6 h-6 text-gray-400" />
-              <h3 className="text-lg font-bold text-white">Implementation</h3>
+          {/* Panel 1 — WITHOUT lazy loading */}
+          <div className="flex-1 bg-gray-900 rounded-xl overflow-hidden border-2 border-red-500">
+            <div className="flex items-center gap-2 px-4 py-3 bg-red-500">
+              <XCircle className="w-4 h-4 text-white" />
+              <span className="text-white font-bold text-sm">Without Lazy Loading — 900 KB on first visit</span>
+            </div>
+
+            {/* Live demo */}
+            <div className="p-4 border-b border-gray-700">
+              <p className="text-gray-400 text-xs mb-3">▶ Live Demo</p>
+              <EagerLoadDemo />
+            </div>
+
+            {/* Code snippet */}
+            <div className="p-4 font-mono text-xs leading-relaxed overflow-x-auto">
+              <p className="text-gray-500 mb-2">{'// ❌ everything bundled upfront — user waits'}</p>
+              <p>
+                <span className="text-purple-400">import </span>
+                <span className="text-yellow-300">HeavyChart</span>
+                <span className="text-purple-400"> from </span>
+                <span className="text-green-400">&apos;./HeavyChart&apos;</span>
+                <span className="text-gray-300">;</span>
+                <span className="text-gray-500 ml-2">{'// 150KB'}</span>
+              </p>
+              <p>
+                <span className="text-purple-400">import </span>
+                <span className="text-yellow-300">CodeEditor</span>
+                <span className="text-purple-400"> from </span>
+                <span className="text-green-400">&apos;./CodeEditor&apos;</span>
+                <span className="text-gray-300">;</span>
+                <span className="text-gray-500 ml-2">{'// 200KB'}</span>
+              </p>
+              <p>
+                <span className="text-purple-400">import </span>
+                <span className="text-yellow-300">Viewer3D</span>
+                <span className="text-purple-400"> from </span>
+                <span className="text-green-400">&apos;./Viewer3D&apos;</span>
+                <span className="text-gray-300">;</span>
+                <span className="text-gray-500 ml-2">{'// 500KB'}</span>
+              </p>
+              <p className="mt-3 text-gray-500">{'// all 900KB downloads before page shows'}</p>
+              <p className="mt-2">
+                <span className="text-purple-400">function </span>
+                <span className="text-yellow-300">App</span>
+                <span className="text-gray-300">() {'{'}</span>
+              </p>
+              <p className="pl-4 text-gray-300">return (</p>
+              <p className="pl-8">
+                <span className="text-gray-300">&lt;</span>
+                <span className="bg-red-500/20 border border-red-500/40 rounded px-1 text-red-300">HeavyChart</span>
+                <span className="text-gray-300"> /&gt;</span>
+                <span className="text-gray-500 ml-2">{'// always in bundle'}</span>
+              </p>
+              <p className="pl-4 text-gray-300">);</p>
+              <p className="text-gray-300">{'}'}</p>
+              <p className="mt-4 text-red-400 text-xs flex items-start gap-1.5">
+                <span className="shrink-0">⚠</span>
+                <span>Every component is included in the initial JS bundle whether the user visits it or not.</span>
+              </p>
             </div>
           </div>
-          <div className="p-6">
-            <pre className="text-sm text-gray-200 overflow-x-auto">
-{`import { lazy, Suspense } from 'react';
 
-// 1. Create lazy component with dynamic import
-const HeavyChart = lazy(() => import('./HeavyChart'));
+          {/* Panel 2 — WITH lazy loading */}
+          <div className="flex-1 bg-gray-900 rounded-xl overflow-hidden border-2 border-green-500">
+            <div className="flex items-center gap-2 px-4 py-3 bg-green-500">
+              <CheckCircle className="w-4 h-4 text-white" />
+              <span className="text-white font-bold text-sm">With Lazy Loading — 50 KB initial, rest on demand</span>
+            </div>
 
-// 2. Wrap with Suspense to show fallback while loading
-function App() {
-  return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <HeavyChart />
-    </Suspense>
-  );
-}
+            {/* Live demo */}
+            <div className="p-4 border-b border-gray-700">
+              <p className="text-gray-400 text-xs mb-3">▶ Live Demo</p>
+              <LazyLoadDemo />
+            </div>
 
-// Route-based code splitting (most impactful)
-const routes = [
-  { path: '/dashboard', element: lazy(() => import('./Dashboard')) },
-  { path: '/settings', element: lazy(() => import('./Settings')) },
-  { path: '/analytics', element: lazy(() => import('./Analytics')) },
-];
-
-// Named exports need slightly different syntax
-const MyComponent = lazy(() => 
-  import('./MyModule').then(module => ({ default: module.MyComponent }))
-);`}</pre>
+            {/* Code snippet */}
+            <div className="p-4 font-mono text-xs leading-relaxed overflow-x-auto">
+              <p className="text-gray-500 mb-2">{'// ✅ only loads when user requests it'}</p>
+              <p>
+                <span className="text-purple-400">const </span>
+                <span className="text-yellow-300">HeavyChart</span>
+                <span className="text-gray-300"> = </span>
+                <span className="bg-green-500/20 border border-green-500/40 rounded px-1 text-green-300">lazy</span>
+                <span className="text-gray-300">(() =&gt;</span>
+              </p>
+              <p className="pl-4">
+                <span className="text-yellow-200">import</span>
+                <span className="text-gray-300">(</span>
+                <span className="text-green-400">&apos;./HeavyChart&apos;</span>
+                <span className="text-gray-300">));</span>
+                <span className="text-gray-500 ml-2">{'// separate chunk'}</span>
+              </p>
+              <p className="mt-3">
+                <span className="text-purple-400">function </span>
+                <span className="text-yellow-300">App</span>
+                <span className="text-gray-300">() {'{'}</span>
+              </p>
+              <p className="pl-4 text-gray-300">return (</p>
+              <p className="pl-8">
+                <span className="text-gray-300">&lt;</span>
+                <span className="bg-green-500/20 border border-green-500/40 rounded px-1 text-green-300">Suspense</span>
+                <span className="text-gray-300"> </span>
+                <span className="text-yellow-200">fallback</span>
+                <span className="text-gray-300">={'{'}&lt;</span>
+                <span className="text-yellow-300">Spinner</span>
+                <span className="text-gray-300"> /&gt;{'}'}&gt;</span>
+              </p>
+              <p className="pl-12">
+                <span className="text-gray-300">&lt;</span>
+                <span className="text-yellow-300">HeavyChart</span>
+                <span className="text-gray-300"> /&gt;</span>
+                <span className="text-gray-500 ml-2">{'// fetched on demand'}</span>
+              </p>
+              <p className="pl-8">
+                <span className="text-gray-300">&lt;/</span>
+                <span className="text-green-300">Suspense</span>
+                <span className="text-gray-300">&gt;</span>
+              </p>
+              <p className="pl-4 text-gray-300">);</p>
+              <p className="text-gray-300">{'}'}</p>
+              <p className="mt-4 text-green-400 text-xs flex items-start gap-1.5">
+                <span className="shrink-0">✓</span>
+                <span>Each chunk downloads only when needed. Initial page load stays fast regardless of how many heavy components exist.</span>
+              </p>
+            </div>
           </div>
         </div>
 
@@ -437,7 +509,7 @@ const MyComponent = lazy(() =>
             <div className="p-6">
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                     <Route className="w-4 h-4 text-green-600" />
                   </div>
                   <div>
@@ -446,7 +518,7 @@ const MyComponent = lazy(() =>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                     <Layers className="w-4 h-4 text-green-600" />
                   </div>
                   <div>
@@ -455,7 +527,7 @@ const MyComponent = lazy(() =>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                     <MessageSquare className="w-4 h-4 text-green-600" />
                   </div>
                   <div>
@@ -464,7 +536,7 @@ const MyComponent = lazy(() =>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                     <Settings className="w-4 h-4 text-green-600" />
                   </div>
                   <div>
@@ -486,7 +558,7 @@ const MyComponent = lazy(() =>
             <div className="p-6">
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
                     <XCircle className="w-4 h-4 text-amber-600" />
                   </div>
                   <div>
@@ -495,7 +567,7 @@ const MyComponent = lazy(() =>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
                     <Eye className="w-4 h-4 text-amber-600" />
                   </div>
                   <div>
@@ -504,7 +576,7 @@ const MyComponent = lazy(() =>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
                     <Zap className="w-4 h-4 text-amber-600" />
                   </div>
                   <div>
@@ -513,7 +585,7 @@ const MyComponent = lazy(() =>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
                     <Gauge className="w-4 h-4 text-amber-600" />
                   </div>
                   <div>

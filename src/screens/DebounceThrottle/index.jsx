@@ -537,45 +537,190 @@ export default function DebounceThrottleScreen() {
               </a>
             </div>
           </div>
-          <div className="p-6">
-            <pre className="text-sm text-gray-200 overflow-x-auto">
-{`import { debounce, throttle } from 'lodash-es';
+          <div className="p-6 font-mono text-xs leading-relaxed overflow-x-auto">
+            <p>
+              <span className="text-purple-400">import </span>
+              <span className="text-gray-300">{'{ '}</span>
+              <span className="text-yellow-300">debounce</span>
+              <span className="text-gray-300">, </span>
+              <span className="text-yellow-300">throttle</span>
+              <span className="text-gray-300">{' }'} </span>
+              <span className="text-purple-400">from </span>
+              <span className="text-green-400">&apos;lodash-es&apos;</span>
+              <span className="text-gray-300">;</span>
+            </p>
+            <p className="mt-4"><span className="text-gray-500">{'// useDebounce hook'}</span></p>
+            <p>
+              <span className="text-purple-400">function </span>
+              <span className="text-yellow-300">useDebounce</span>
+              <span className="text-gray-300">(</span>
+              <span className="text-orange-300">value</span>
+              <span className="text-gray-300">, </span>
+              <span className="text-orange-300">delay</span>
+              <span className="text-gray-300">) {'{'}</span>
+            </p>
+            <p className="pl-4">
+              <span className="text-purple-400">const </span>
+              <span className="text-gray-300">[</span>
+              <span className="text-yellow-300">debouncedValue</span>
+              <span className="text-gray-300">, </span>
+              <span className="text-yellow-300">setDebouncedValue</span>
+              <span className="text-gray-300">] = </span>
+              <span className="text-yellow-300">useState</span>
+              <span className="text-gray-300">(</span>
+              <span className="text-orange-300">value</span>
+              <span className="text-gray-300">);</span>
+            </p>
+            <p className="mt-2 pl-4">
+              <span className="text-yellow-300">useEffect</span>
+              <span className="text-gray-300">(() =&gt; {'{'}</span>
+            </p>
+            <p className="pl-8">
+              <span className="text-purple-400">const </span>
+              <span className="text-yellow-300">debouncedSetter</span>
+              <span className="text-gray-300"> = </span>
+              <span className="text-yellow-300">debounce</span>
+              <span className="text-gray-300">(() =&gt; {'{'}</span>
+            </p>
+            <p className="pl-12">
+              <span className="text-yellow-300">setDebouncedValue</span>
+              <span className="text-gray-300">(</span>
+              <span className="text-orange-300">value</span>
+              <span className="text-gray-300">);</span>
+            </p>
+            <p className="pl-8">
+              <span className="text-gray-300">{'}'}, </span>
+              <span className="text-orange-300">delay</span>
+              <span className="text-gray-300">);</span>
+            </p>
+            <p className="pl-8">
+              <span className="text-yellow-300">debouncedSetter</span>
+              <span className="text-gray-300">();</span>
+            </p>
+            <p className="pl-8">
+              <span className="text-purple-400">return </span>
+              <span className="text-gray-300">() =&gt; </span>
+              <span className="text-yellow-300">debouncedSetter</span>
+              <span className="text-gray-300">.</span>
+              <span className="text-yellow-300">cancel</span>
+              <span className="text-gray-300">();</span>
+              <span className="text-gray-500 ml-2">{'// Cleanup'}</span>
+            </p>
+            <p className="pl-4">
+              <span className="text-gray-300">{'}'}, [</span>
+              <span className="text-orange-300">value</span>
+              <span className="text-gray-300">, </span>
+              <span className="text-orange-300">delay</span>
+              <span className="text-gray-300">]);</span>
+            </p>
+            <p className="pl-4">
+              <span className="text-purple-400">return </span>
+              <span className="text-yellow-300">debouncedValue</span>
+              <span className="text-gray-300">;</span>
+            </p>
+            <p><span className="text-gray-300">{'}'}</span></p>
 
-// useDebounce hook using lodash-es
-function useDebounce(value, delay) {
-  const [debouncedValue, setDebouncedValue] = useState(value);
+            <p className="mt-4"><span className="text-gray-500">{'// useThrottle hook'}</span></p>
+            <p>
+              <span className="text-purple-400">function </span>
+              <span className="text-yellow-300">useThrottle</span>
+              <span className="text-gray-300">(</span>
+              <span className="text-orange-300">value</span>
+              <span className="text-gray-300">, </span>
+              <span className="text-orange-300">interval</span>
+              <span className="text-gray-300">) {'{'}</span>
+            </p>
+            <p className="pl-4">
+              <span className="text-purple-400">const </span>
+              <span className="text-gray-300">[</span>
+              <span className="text-yellow-300">throttledValue</span>
+              <span className="text-gray-300">, </span>
+              <span className="text-yellow-300">setThrottledValue</span>
+              <span className="text-gray-300">] = </span>
+              <span className="text-yellow-300">useState</span>
+              <span className="text-gray-300">(</span>
+              <span className="text-orange-300">value</span>
+              <span className="text-gray-300">);</span>
+            </p>
+            <p className="mt-2 pl-4">
+              <span className="text-yellow-300">useEffect</span>
+              <span className="text-gray-300">(() =&gt; {'{'}</span>
+            </p>
+            <p className="pl-8">
+              <span className="text-purple-400">const </span>
+              <span className="text-yellow-300">throttledSetter</span>
+              <span className="text-gray-300"> = </span>
+              <span className="text-yellow-300">throttle</span>
+              <span className="text-gray-300">(() =&gt; {'{'}</span>
+            </p>
+            <p className="pl-12">
+              <span className="text-yellow-300">setThrottledValue</span>
+              <span className="text-gray-300">(</span>
+              <span className="text-orange-300">value</span>
+              <span className="text-gray-300">);</span>
+            </p>
+            <p className="pl-8">
+              <span className="text-gray-300">{'}'}, </span>
+              <span className="text-orange-300">interval</span>
+              <span className="text-gray-300">, {'{ '}</span>
+              <span className="text-orange-300">leading</span>
+              <span className="text-gray-300">: </span>
+              <span className="text-blue-400">true</span>
+              <span className="text-gray-300">, </span>
+              <span className="text-orange-300">trailing</span>
+              <span className="text-gray-300">: </span>
+              <span className="text-blue-400">true</span>
+              <span className="text-gray-300">{' }'});</span>
+            </p>
+            <p className="pl-8">
+              <span className="text-yellow-300">throttledSetter</span>
+              <span className="text-gray-300">();</span>
+            </p>
+            <p className="pl-8">
+              <span className="text-purple-400">return </span>
+              <span className="text-gray-300">() =&gt; </span>
+              <span className="text-yellow-300">throttledSetter</span>
+              <span className="text-gray-300">.</span>
+              <span className="text-yellow-300">cancel</span>
+              <span className="text-gray-300">();</span>
+            </p>
+            <p className="pl-4">
+              <span className="text-gray-300">{'}'}, [</span>
+              <span className="text-orange-300">value</span>
+              <span className="text-gray-300">, </span>
+              <span className="text-orange-300">interval</span>
+              <span className="text-gray-300">]);</span>
+            </p>
+            <p className="pl-4">
+              <span className="text-purple-400">return </span>
+              <span className="text-yellow-300">throttledValue</span>
+              <span className="text-gray-300">;</span>
+            </p>
+            <p><span className="text-gray-300">{'}'}</span></p>
 
-  useEffect(() => {
-    const debouncedSetter = debounce(() => {
-      setDebouncedValue(value);
-    }, delay);
-    
-    debouncedSetter();
-    return () => debouncedSetter.cancel();  // Cleanup
-  }, [value, delay]);
-
-  return debouncedValue;
-}
-
-// useThrottle hook using lodash-es
-function useThrottle(value, interval) {
-  const [throttledValue, setThrottledValue] = useState(value);
-
-  useEffect(() => {
-    const throttledSetter = throttle(() => {
-      setThrottledValue(value);
-    }, interval, { leading: true, trailing: true });
-    
-    throttledSetter();
-    return () => throttledSetter.cancel();
-  }, [value, interval]);
-
-  return throttledValue;
-}
-
-// Usage
-const debouncedQuery = useDebounce(searchQuery, 500);
-const throttledScroll = useThrottle(scrollPosition, 100);`}</pre>
+            <p className="mt-4"><span className="text-gray-500">{'// Usage'}</span></p>
+            <p>
+              <span className="text-purple-400">const </span>
+              <span className="text-yellow-300">debouncedQuery</span>
+              <span className="text-gray-300"> = </span>
+              <span className="text-yellow-300">useDebounce</span>
+              <span className="text-gray-300">(</span>
+              <span className="text-orange-300">searchQuery</span>
+              <span className="text-gray-300">, </span>
+              <span className="text-blue-400">500</span>
+              <span className="text-gray-300">);</span>
+            </p>
+            <p>
+              <span className="text-purple-400">const </span>
+              <span className="text-yellow-300">throttledScroll</span>
+              <span className="text-gray-300"> = </span>
+              <span className="text-yellow-300">useThrottle</span>
+              <span className="text-gray-300">(</span>
+              <span className="text-orange-300">scrollPosition</span>
+              <span className="text-gray-300">, </span>
+              <span className="text-blue-400">100</span>
+              <span className="text-gray-300">);</span>
+            </p>
           </div>
         </div>
 
