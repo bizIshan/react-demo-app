@@ -25,7 +25,7 @@ import {
   Zap,
   RefreshCw,
   Package,
-  Box
+  Box,
 } from 'lucide-react';
 
 // Header component
@@ -33,7 +33,10 @@ function ScreenHeader({ title, icon: Icon }) {
   return (
     <div className="sticky top-0 z-50 bg-white shadow-md">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-4">
-        <Link to="/" className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium text-gray-700 transition-colors">
+        <Link
+          to="/"
+          className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium text-gray-700 transition-colors"
+        >
           <ArrowLeft className="w-4 h-4" />
           Back
         </Link>
@@ -53,7 +56,9 @@ function ScreenHeader({ title, icon: Icon }) {
 // Level 3 - Finally uses the data
 function DeepChild({ user, theme, onLogout }) {
   return (
-    <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-100'}`}>
+    <div
+      className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-100'}`}
+    >
       <div className="flex items-center gap-2 mb-2">
         <Box className="w-4 h-4 text-green-500" />
         <h4 className="font-bold">Level 3: Finally uses data</h4>
@@ -66,7 +71,7 @@ function DeepChild({ user, theme, onLogout }) {
         <Palette className="w-4 h-4 text-gray-400" />
         <span>Theme: {theme}</span>
       </div>
-      <button 
+      <button
         onClick={onLogout}
         className="flex items-center gap-2 mt-2 px-3 py-1.5 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
       >
@@ -83,7 +88,9 @@ function MiddleComponent({ user, theme, onLogout }) {
     <div className="p-4 border-2 border-dashed border-orange-300 rounded-lg bg-orange-50/50">
       <div className="flex items-center gap-2 mb-2">
         <ArrowDown className="w-4 h-4 text-orange-500" />
-        <h4 className="font-bold text-orange-600">Level 2: Just passing props...</h4>
+        <h4 className="font-bold text-orange-600">
+          Level 2: Just passing props...
+        </h4>
       </div>
       <p className="text-sm text-gray-500 mb-3 flex items-center gap-1">
         <XCircle className="w-3 h-3 text-red-400" />
@@ -100,7 +107,9 @@ function TopComponent({ user, theme, onLogout }) {
     <div className="p-4 border-2 border-dashed border-yellow-400 rounded-lg bg-yellow-50/50">
       <div className="flex items-center gap-2 mb-2">
         <ArrowDown className="w-4 h-4 text-yellow-500" />
-        <h4 className="font-bold text-yellow-600">Level 1: Just passing props...</h4>
+        <h4 className="font-bold text-yellow-600">
+          Level 1: Just passing props...
+        </h4>
       </div>
       <p className="text-sm text-gray-500 mb-3 flex items-center gap-1">
         <XCircle className="w-3 h-3 text-red-400" />
@@ -112,7 +121,10 @@ function TopComponent({ user, theme, onLogout }) {
 }
 
 function PropDrillingDemo() {
-  const [user, setUser] = useState({ name: 'John Doe', email: 'john@example.com' });
+  const [user, setUser] = useState({
+    name: 'John Doe',
+    email: 'john@example.com',
+  });
   const [theme, setTheme] = useState('light');
 
   return (
@@ -120,7 +132,9 @@ function PropDrillingDemo() {
       <div className="bg-red-500 px-6 py-4">
         <div className="flex items-center gap-3">
           <XCircle className="w-6 h-6 text-white" />
-          <h3 className="text-xl font-bold text-white">Prop Drilling Problem</h3>
+          <h3 className="text-xl font-bold text-white">
+            Prop Drilling Problem
+          </h3>
         </div>
       </div>
 
@@ -129,18 +143,23 @@ function PropDrillingDemo() {
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
             <p className="text-red-800">
-              Props must be passed through <strong>every</strong> intermediate component, even if they don't use them.
-              This creates tight coupling and makes refactoring difficult.
+              Props must be passed through <strong>every</strong> intermediate
+              component, even if they don't use them. This creates tight
+              coupling and makes refactoring difficult.
             </p>
           </div>
         </div>
 
         <div className="flex gap-3 mb-6">
           <button
-            onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+            onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}
             className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-lg transition-colors"
           >
-            {theme === 'light' ? <Sun className="w-4 h.4" /> : <Moon className="w-4 h-4" />}
+            {theme === 'light' ? (
+              <Sun className="w-4 h.4" />
+            ) : (
+              <Moon className="w-4 h-4" />
+            )}
             Toggle: {theme}
           </button>
         </div>
@@ -150,8 +169,14 @@ function PropDrillingDemo() {
             <Share2 className="w-4 h-4 text-red-600" />
             <h4 className="font-bold text-red-600">Root: Has the data</h4>
           </div>
-          <p className="text-sm text-gray-500 mb-3">user, theme, onLogout defined here</p>
-          <TopComponent user={user} theme={theme} onLogout={() => setUser({ name: 'Guest', email: '' })} />
+          <p className="text-sm text-gray-500 mb-3">
+            user, theme, onLogout defined here
+          </p>
+          <TopComponent
+            user={user}
+            theme={theme}
+            onLogout={() => setUser({ name: 'Guest', email: '' })}
+          />
         </div>
 
         <div className="mt-4 bg-gray-900 rounded-lg p-4">
@@ -161,28 +186,62 @@ function PropDrillingDemo() {
           </div>
           <div className="font-mono text-xs leading-relaxed overflow-x-auto space-y-0.5">
             <p>
-              <span className="text-gray-500">&lt;</span><span className="text-yellow-300">TopComponent</span>
-              <span className="text-orange-300"> user</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">user</span><span className="text-gray-300">{'}'}</span>
-              <span className="text-orange-300"> theme</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">theme</span><span className="text-gray-300">{'}'}</span>
-              <span className="text-orange-300"> onLogout</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">onLogout</span><span className="text-gray-300">{'}'}&gt;</span>
+              <span className="text-gray-500">&lt;</span>
+              <span className="text-yellow-300">TopComponent</span>
+              <span className="text-orange-300"> user</span>
+              <span className="text-gray-300">={'{'}</span>
+              <span className="text-blue-300">user</span>
+              <span className="text-gray-300">{'}'}</span>
+              <span className="text-orange-300"> theme</span>
+              <span className="text-gray-300">={'{'}</span>
+              <span className="text-blue-300">theme</span>
+              <span className="text-gray-300">{'}'}</span>
+              <span className="text-orange-300"> onLogout</span>
+              <span className="text-gray-300">={'{'}</span>
+              <span className="text-blue-300">onLogout</span>
+              <span className="text-gray-300">{'}'}&gt;</span>
             </p>
             <p className="pl-4">
-              <span className="text-gray-500">&lt;</span><span className="text-yellow-300">MiddleComponent</span>
-              <span className="text-orange-300"> user</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">user</span><span className="text-gray-300">{'}'}</span>
-              <span className="text-orange-300"> theme</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">theme</span><span className="text-gray-300">{'}'}</span>
-              <span className="text-orange-300"> onLogout</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">onLogout</span><span className="text-gray-300">{'}'}&gt;</span>
+              <span className="text-gray-500">&lt;</span>
+              <span className="text-yellow-300">MiddleComponent</span>
+              <span className="text-orange-300"> user</span>
+              <span className="text-gray-300">={'{'}</span>
+              <span className="text-blue-300">user</span>
+              <span className="text-gray-300">{'}'}</span>
+              <span className="text-orange-300"> theme</span>
+              <span className="text-gray-300">={'{'}</span>
+              <span className="text-blue-300">theme</span>
+              <span className="text-gray-300">{'}'}</span>
+              <span className="text-orange-300"> onLogout</span>
+              <span className="text-gray-300">={'{'}</span>
+              <span className="text-blue-300">onLogout</span>
+              <span className="text-gray-300">{'}'}&gt;</span>
             </p>
             <p className="pl-8">
-              <span className="text-gray-500">&lt;</span><span className="text-yellow-300">DeepChild</span>
-              <span className="text-orange-300"> user</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">user</span><span className="text-gray-300">{'}'}</span>
-              <span className="text-orange-300"> theme</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">theme</span><span className="text-gray-300">{'}'}</span>
-              <span className="text-orange-300"> onLogout</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">onLogout</span><span className="text-gray-300">{'}'} /&gt;</span>
+              <span className="text-gray-500">&lt;</span>
+              <span className="text-yellow-300">DeepChild</span>
+              <span className="text-orange-300"> user</span>
+              <span className="text-gray-300">={'{'}</span>
+              <span className="text-blue-300">user</span>
+              <span className="text-gray-300">{'}'}</span>
+              <span className="text-orange-300"> theme</span>
+              <span className="text-gray-300">={'{'}</span>
+              <span className="text-blue-300">theme</span>
+              <span className="text-gray-300">{'}'}</span>
+              <span className="text-orange-300"> onLogout</span>
+              <span className="text-gray-300">={'{'}</span>
+              <span className="text-blue-300">onLogout</span>
+              <span className="text-gray-300">{'}'} /&gt;</span>
             </p>
             <p className="pl-4">
-              <span className="text-gray-500">&lt;/</span><span className="text-yellow-300">MiddleComponent</span><span className="text-gray-500">&gt;</span>
+              <span className="text-gray-500">&lt;/</span>
+              <span className="text-yellow-300">MiddleComponent</span>
+              <span className="text-gray-500">&gt;</span>
             </p>
             <p>
-              <span className="text-gray-500">&lt;/</span><span className="text-yellow-300">TopComponent</span><span className="text-gray-500">&gt;</span>
+              <span className="text-gray-500">&lt;/</span>
+              <span className="text-yellow-300">TopComponent</span>
+              <span className="text-gray-500">&gt;</span>
             </p>
           </div>
         </div>
@@ -216,7 +275,9 @@ function ContextDeepChild() {
   const theme = useTheme();
 
   return (
-    <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-100'}`}>
+    <div
+      className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-100'}`}
+    >
       <div className="flex items-center gap-2 mb-2">
         <Zap className="w-4 h-4 text-green-500" />
         <h4 className="font-bold">Level 3: Uses context directly</h4>
@@ -229,7 +290,7 @@ function ContextDeepChild() {
         <Palette className="w-4 h-4 text-gray-400" />
         <span>Theme: {theme}</span>
       </div>
-      <button 
+      <button
         onClick={logout}
         className="flex items-center gap-2 mt-2 px-3 py-1.5 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
       >
@@ -275,13 +336,16 @@ function ContextTopComponent() {
 }
 
 function ContextApiDemo() {
-  const [user, setUser] = useState({ name: 'Jane Doe', email: 'jane@example.com' });
+  const [user, setUser] = useState({
+    name: 'Jane Doe',
+    email: 'jane@example.com',
+  });
   const [theme, setTheme] = useState('light');
 
   const userValue = {
     user,
     login: (userData) => setUser(userData),
-    logout: () => setUser({ name: 'Guest', email: '' })
+    logout: () => setUser({ name: 'Guest', email: '' }),
   };
 
   return (
@@ -298,7 +362,8 @@ function ContextApiDemo() {
           <div className="flex items-start gap-3">
             <Lightbulb className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
             <p className="text-green-800">
-              Context allows you to pass data through the component tree <strong>without manually passing props</strong> at every level.
+              Context allows you to pass data through the component tree{' '}
+              <strong>without manually passing props</strong> at every level.
               Components access the data directly when needed.
             </p>
           </div>
@@ -306,10 +371,14 @@ function ContextApiDemo() {
 
         <div className="flex gap-3 mb-6">
           <button
-            onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+            onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}
             className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-lg transition-colors"
           >
-            {theme === 'light' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {theme === 'light' ? (
+              <Sun className="w-4 h-4" />
+            ) : (
+              <Moon className="w-4 h-4" />
+            )}
             Toggle: {theme}
           </button>
         </div>
@@ -319,9 +388,13 @@ function ContextApiDemo() {
             <div className="p-4 border-2 border-green-500 rounded-lg bg-green-50/50">
               <div className="flex items-center gap-2 mb-2">
                 <Network className="w-4 h-4 text-green-600" />
-                <h4 className="font-bold text-green-600">Root: Provides context</h4>
+                <h4 className="font-bold text-green-600">
+                  Root: Provides context
+                </h4>
               </div>
-              <p className="text-sm text-gray-500 mb-3">UserContext.Provider, ThemeContext.Provider</p>
+              <p className="text-sm text-gray-500 mb-3">
+                UserContext.Provider, ThemeContext.Provider
+              </p>
               <ContextTopComponent />
             </div>
           </ThemeContext.Provider>
@@ -333,29 +406,71 @@ function ContextApiDemo() {
             <span>Middle components are clean - no props!</span>
           </div>
           <div className="font-mono text-xs leading-relaxed overflow-x-auto space-y-0.5">
-            <p><span className="text-gray-500">{'// DeepChild accesses context directly'}</span></p>
             <p>
-              <span className="text-purple-400">function </span><span className="text-yellow-300">DeepChild</span><span className="text-gray-300">() {'{'}</span>
+              <span className="text-gray-500">
+                {'// DeepChild accesses context directly'}
+              </span>
             </p>
-            <p className="pl-4">
-              <span className="text-purple-400">const </span><span className="text-gray-300">{'{ '}</span><span className="text-orange-300">user</span><span className="text-gray-300">, </span><span className="text-orange-300">logout</span><span className="text-gray-300">{' }'} = </span><span className="text-yellow-300">useUser</span><span className="text-gray-300">();</span>
-            </p>
-            <p className="pl-4">
-              <span className="text-purple-400">const </span><span className="text-orange-300">theme</span><span className="text-gray-300"> = </span><span className="text-yellow-300">useTheme</span><span className="text-gray-300">();</span>
-            </p>
-            <p className="pl-4">
-              <span className="text-purple-400">return </span><span className="text-gray-500">&lt;</span><span className="text-yellow-300">div</span><span className="text-gray-500">&gt;</span><span className="text-gray-300">User: {'{'}</span><span className="text-orange-300">user</span><span className="text-gray-300">.name{'}'}</span><span className="text-gray-500">&lt;/</span><span className="text-yellow-300">div</span><span className="text-gray-500">&gt;</span><span className="text-gray-300">;</span>
-            </p>
-            <p><span className="text-gray-300">{'}'}</span></p>
-            <p className="mt-3"><span className="text-gray-500">{'// Middle components are clean — no props needed'}</span></p>
             <p>
-              <span className="text-purple-400">function </span><span className="text-yellow-300">MiddleComponent</span><span className="text-gray-300">() {'{'}</span>
+              <span className="text-purple-400">function </span>
+              <span className="text-yellow-300">DeepChild</span>
+              <span className="text-gray-300">() {'{'}</span>
             </p>
             <p className="pl-4">
-              <span className="text-purple-400">return </span><span className="text-gray-500">&lt;</span><span className="text-yellow-300">DeepChild</span><span className="text-gray-300"> /&gt;;</span>
-              <span className="text-gray-500 ml-2">{'// No props passed!'}</span>
+              <span className="text-purple-400">const </span>
+              <span className="text-gray-300">{'{ '}</span>
+              <span className="text-orange-300">user</span>
+              <span className="text-gray-300">, </span>
+              <span className="text-orange-300">logout</span>
+              <span className="text-gray-300">{' }'} = </span>
+              <span className="text-yellow-300">useUser</span>
+              <span className="text-gray-300">();</span>
             </p>
-            <p><span className="text-gray-300">{'}'}</span></p>
+            <p className="pl-4">
+              <span className="text-purple-400">const </span>
+              <span className="text-orange-300">theme</span>
+              <span className="text-gray-300"> = </span>
+              <span className="text-yellow-300">useTheme</span>
+              <span className="text-gray-300">();</span>
+            </p>
+            <p className="pl-4">
+              <span className="text-purple-400">return </span>
+              <span className="text-gray-500">&lt;</span>
+              <span className="text-yellow-300">div</span>
+              <span className="text-gray-500">&gt;</span>
+              <span className="text-gray-300">User: {'{'}</span>
+              <span className="text-orange-300">user</span>
+              <span className="text-gray-300">.name{'}'}</span>
+              <span className="text-gray-500">&lt;/</span>
+              <span className="text-yellow-300">div</span>
+              <span className="text-gray-500">&gt;</span>
+              <span className="text-gray-300">;</span>
+            </p>
+            <p>
+              <span className="text-gray-300">{'}'}</span>
+            </p>
+            <p className="mt-3">
+              <span className="text-gray-500">
+                {'// Middle components are clean — no props needed'}
+              </span>
+            </p>
+            <p>
+              <span className="text-purple-400">function </span>
+              <span className="text-yellow-300">MiddleComponent</span>
+              <span className="text-gray-300">() {'{'}</span>
+            </p>
+            <p className="pl-4">
+              <span className="text-purple-400">return </span>
+              <span className="text-gray-500">&lt;</span>
+              <span className="text-yellow-300">DeepChild</span>
+              <span className="text-gray-300"> /&gt;;</span>
+              <span className="text-gray-500 ml-2">
+                {'// No props passed!'}
+              </span>
+            </p>
+            <p>
+              <span className="text-gray-300">{'}'}</span>
+            </p>
           </div>
         </div>
       </div>
@@ -371,14 +486,18 @@ function WhenToUse() {
     { icon: Box, text: '1-2 levels deep', color: 'blue' },
     { icon: Settings, text: 'Component-specific data', color: 'blue' },
     { icon: Layers, text: 'Explicit data flow needed', color: 'blue' },
-    { icon: Package, text: 'Reusable in different contexts', color: 'blue' }
+    { icon: Package, text: 'Reusable in different contexts', color: 'blue' },
   ];
 
   const contextUseCases = [
     { icon: Globe, text: 'Theme, language, auth (global)', color: 'green' },
     { icon: Network, text: 'Data needed at 3+ levels deep', color: 'green' },
-    { icon: Share2, text: 'Multiple components need same data', color: 'green' },
-    { icon: RefreshCw, text: 'Data changes infrequently', color: 'green' }
+    {
+      icon: Share2,
+      text: 'Multiple components need same data',
+      color: 'green',
+    },
+    { icon: RefreshCw, text: 'Data changes infrequently', color: 'green' },
   ];
 
   return (
@@ -433,7 +552,9 @@ function WhenToUse() {
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
             <div>
-              <p className="font-bold text-amber-800 mb-2">Common Pitfalls to Watch Out For:</p>
+              <p className="font-bold text-amber-800 mb-2">
+                Common Pitfalls to Watch Out For:
+              </p>
               <ul className="text-amber-700 text-sm space-y-1">
                 <li className="flex items-center gap-2">
                   <RefreshCw className="w-3 h-3" />
@@ -462,11 +583,31 @@ function WhenToUse() {
 
 function KeyTakeaways() {
   const takeaways = [
-    { icon: XCircle, text: 'Prop drilling makes components tightly coupled', color: 'text-red-500' },
-    { icon: CheckCircle, text: 'Context enables clean component architecture', color: 'text-green-500' },
-    { icon: Network, text: 'createContext() + useContext() is the pattern', color: 'text-blue-500' },
-    { icon: Zap, text: 'Custom hooks (useUser) make context consumption cleaner', color: 'text-purple-500' },
-    { icon: AlertTriangle, text: "Don't overuse - props are fine for shallow trees", color: 'text-amber-500' }
+    {
+      icon: XCircle,
+      text: 'Prop drilling makes components tightly coupled',
+      color: 'text-red-500',
+    },
+    {
+      icon: CheckCircle,
+      text: 'Context enables clean component architecture',
+      color: 'text-green-500',
+    },
+    {
+      icon: Network,
+      text: 'createContext() + useContext() is the pattern',
+      color: 'text-blue-500',
+    },
+    {
+      icon: Zap,
+      text: 'Custom hooks (useUser) make context consumption cleaner',
+      color: 'text-purple-500',
+    },
+    {
+      icon: AlertTriangle,
+      text: "Don't overuse - props are fine for shallow trees",
+      color: 'text-amber-500',
+    },
   ];
 
   return (
@@ -481,7 +622,10 @@ function KeyTakeaways() {
       <div className="p-6">
         <div className="space-y-3">
           {takeaways.map((item, index) => (
-            <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <div
+              key={index}
+              className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            >
               <item.icon className={`w-5 h-5 ${item.color}`} />
               <span className="text-gray-700">{item.text}</span>
             </div>
@@ -496,7 +640,7 @@ export default function ContextApiScreen() {
   return (
     <div className="min-h-screen bg-gray-100">
       <ScreenHeader title="Context API vs Prop Drilling" icon={Globe} />
-      
+
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Hero Section */}
         <div className="bg-linear-to-r from-blue-500 to-cyan-500 rounded-xl p-6 mb-8 text-white">
@@ -505,10 +649,14 @@ export default function ContextApiScreen() {
               <Network className="w-8 h-8" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold mb-2">The Prop Drilling Problem</h2>
+              <h2 className="text-2xl font-bold mb-2">
+                The Prop Drilling Problem
+              </h2>
               <p className="text-blue-100 leading-relaxed">
-                When data needs to pass through many component levels, "prop drilling" can make code hard to maintain.
-                React's Context API provides a way to share values between components without explicitly passing props.
+                When data needs to pass through many component levels, "prop
+                drilling" can make code hard to maintain. React's Context API
+                provides a way to share values between components without
+                explicitly passing props.
               </p>
             </div>
           </div>
@@ -550,67 +698,178 @@ export default function ContextApiScreen() {
             <div className="bg-gray-800 px-6 py-4">
               <div className="flex items-center gap-3">
                 <Code className="w-6 h-6 text-blue-400" />
-                <h3 className="text-xl font-bold text-white">Context API Pattern</h3>
+                <h3 className="text-xl font-bold text-white">
+                  Context API Pattern
+                </h3>
               </div>
             </div>
             <div className="p-6 bg-gray-900 font-mono text-xs leading-relaxed overflow-x-auto space-y-0.5">
-              <p><span className="text-gray-500">{'// 1. Create Context with default value'}</span></p>
               <p>
-                <span className="text-purple-400">const </span><span className="text-yellow-300">ThemeContext</span><span className="text-gray-300"> = </span><span className="text-yellow-300">createContext</span><span className="text-gray-300">(</span><span className="text-green-400">&apos;light&apos;</span><span className="text-gray-300">);</span>
+                <span className="text-gray-500">
+                  {'// 1. Create Context with default value'}
+                </span>
+              </p>
+              <p>
+                <span className="text-purple-400">const </span>
+                <span className="text-yellow-300">ThemeContext</span>
+                <span className="text-gray-300"> = </span>
+                <span className="text-yellow-300">createContext</span>
+                <span className="text-gray-300">(</span>
+                <span className="text-green-400">&apos;light&apos;</span>
+                <span className="text-gray-300">);</span>
               </p>
 
-              <p className="mt-3"><span className="text-gray-500">{'// 2. Create Provider component'}</span></p>
+              <p className="mt-3">
+                <span className="text-gray-500">
+                  {'// 2. Create Provider component'}
+                </span>
+              </p>
               <p>
-                <span className="text-purple-400">function </span><span className="text-yellow-300">ThemeProvider</span><span className="text-gray-300">({'{ '}</span><span className="text-orange-300">children</span><span className="text-gray-300">{' }'}) {'{'}</span>
+                <span className="text-purple-400">function </span>
+                <span className="text-yellow-300">ThemeProvider</span>
+                <span className="text-gray-300">({'{ '}</span>
+                <span className="text-orange-300">children</span>
+                <span className="text-gray-300">
+                  {' }'}) {'{'}
+                </span>
               </p>
               <p className="pl-4">
-                <span className="text-purple-400">const </span><span className="text-gray-300">[</span><span className="text-orange-300">theme</span><span className="text-gray-300">, </span><span className="text-orange-300">setTheme</span><span className="text-gray-300">] = </span><span className="text-yellow-300">useState</span><span className="text-gray-300">(</span><span className="text-green-400">&apos;light&apos;</span><span className="text-gray-300">);</span>
+                <span className="text-purple-400">const </span>
+                <span className="text-gray-300">[</span>
+                <span className="text-orange-300">theme</span>
+                <span className="text-gray-300">, </span>
+                <span className="text-orange-300">setTheme</span>
+                <span className="text-gray-300">] = </span>
+                <span className="text-yellow-300">useState</span>
+                <span className="text-gray-300">(</span>
+                <span className="text-green-400">&apos;light&apos;</span>
+                <span className="text-gray-300">);</span>
               </p>
               <p className="pl-4">
-                <span className="text-purple-400">const </span><span className="text-orange-300">toggle</span><span className="text-gray-300"> = () =&gt; </span><span className="text-orange-300">setTheme</span><span className="text-gray-300">(t =&gt; t === </span><span className="text-green-400">&apos;light&apos;</span><span className="text-gray-300"> ? </span><span className="text-green-400">&apos;dark&apos;</span><span className="text-gray-300"> : </span><span className="text-green-400">&apos;light&apos;</span><span className="text-gray-300">);</span>
+                <span className="text-purple-400">const </span>
+                <span className="text-orange-300">toggle</span>
+                <span className="text-gray-300"> = () =&gt; </span>
+                <span className="text-orange-300">setTheme</span>
+                <span className="text-gray-300">(t =&gt; t === </span>
+                <span className="text-green-400">&apos;light&apos;</span>
+                <span className="text-gray-300"> ? </span>
+                <span className="text-green-400">&apos;dark&apos;</span>
+                <span className="text-gray-300"> : </span>
+                <span className="text-green-400">&apos;light&apos;</span>
+                <span className="text-gray-300">);</span>
               </p>
-              <p className="pl-4 mt-2"><span className="text-purple-400">return </span><span className="text-gray-300">(</span></p>
+              <p className="pl-4 mt-2">
+                <span className="text-purple-400">return </span>
+                <span className="text-gray-300">(</span>
+              </p>
               <p className="pl-8">
-                <span className="text-gray-500">&lt;</span><span className="text-yellow-300">ThemeContext.Provider</span>
-                <span className="text-orange-300"> value</span><span className="text-gray-300">={'{{'}  </span><span className="text-blue-300">theme</span><span className="text-gray-300">, </span><span className="text-blue-300">toggle</span><span className="text-gray-300">  {'}}'}&gt;</span>
+                <span className="text-gray-500">&lt;</span>
+                <span className="text-yellow-300">ThemeContext.Provider</span>
+                <span className="text-orange-300"> value</span>
+                <span className="text-gray-300">={'{{'} </span>
+                <span className="text-blue-300">theme</span>
+                <span className="text-gray-300">, </span>
+                <span className="text-blue-300">toggle</span>
+                <span className="text-gray-300"> {'}}'}&gt;</span>
               </p>
               <p className="pl-12">
-                <span className="text-gray-300">{'{'}</span><span className="text-orange-300">children</span><span className="text-gray-300">{'}'}</span>
+                <span className="text-gray-300">{'{'}</span>
+                <span className="text-orange-300">children</span>
+                <span className="text-gray-300">{'}'}</span>
               </p>
               <p className="pl-8">
-                <span className="text-gray-500">&lt;/</span><span className="text-yellow-300">ThemeContext.Provider</span><span className="text-gray-500">&gt;</span>
+                <span className="text-gray-500">&lt;/</span>
+                <span className="text-yellow-300">ThemeContext.Provider</span>
+                <span className="text-gray-500">&gt;</span>
               </p>
-              <p className="pl-4"><span className="text-gray-300">);</span></p>
-              <p><span className="text-gray-300">{'}'}</span></p>
-
-              <p className="mt-3"><span className="text-gray-500">{'// 3. Create custom hook for easy access'}</span></p>
+              <p className="pl-4">
+                <span className="text-gray-300">);</span>
+              </p>
               <p>
-                <span className="text-purple-400">function </span><span className="text-yellow-300">useTheme</span><span className="text-gray-300">() {'{'}</span>
+                <span className="text-gray-300">{'}'}</span>
               </p>
-              <p className="pl-4">
-                <span className="text-purple-400">const </span><span className="text-orange-300">context</span><span className="text-gray-300"> = </span><span className="text-yellow-300">useContext</span><span className="text-gray-300">(</span><span className="text-yellow-300">ThemeContext</span><span className="text-gray-300">);</span>
-              </p>
-              <p className="pl-4">
-                <span className="text-purple-400">if </span><span className="text-gray-300">(!</span><span className="text-orange-300">context</span><span className="text-gray-300">) </span><span className="text-purple-400">throw new </span><span className="text-yellow-300">Error</span><span className="text-gray-300">(</span><span className="text-green-400">&apos;useTheme must be within ThemeProvider&apos;</span><span className="text-gray-300">);</span>
-              </p>
-              <p className="pl-4"><span className="text-purple-400">return </span><span className="text-orange-300">context</span><span className="text-gray-300">;</span></p>
-              <p><span className="text-gray-300">{'}'}</span></p>
 
-              <p className="mt-3"><span className="text-gray-500">{'// 4. Use in any component'}</span></p>
+              <p className="mt-3">
+                <span className="text-gray-500">
+                  {'// 3. Create custom hook for easy access'}
+                </span>
+              </p>
               <p>
-                <span className="text-purple-400">function </span><span className="text-yellow-300">Button</span><span className="text-gray-300">() {'{'}</span>
+                <span className="text-purple-400">function </span>
+                <span className="text-yellow-300">useTheme</span>
+                <span className="text-gray-300">() {'{'}</span>
               </p>
               <p className="pl-4">
-                <span className="text-purple-400">const </span><span className="text-gray-300">{'{ '}</span><span className="text-orange-300">theme</span><span className="text-gray-300">, </span><span className="text-orange-300">toggle</span><span className="text-gray-300">{' }'} = </span><span className="text-yellow-300">useTheme</span><span className="text-gray-300">();</span>
+                <span className="text-purple-400">const </span>
+                <span className="text-orange-300">context</span>
+                <span className="text-gray-300"> = </span>
+                <span className="text-yellow-300">useContext</span>
+                <span className="text-gray-300">(</span>
+                <span className="text-yellow-300">ThemeContext</span>
+                <span className="text-gray-300">);</span>
+              </p>
+              <p className="pl-4">
+                <span className="text-purple-400">if </span>
+                <span className="text-gray-300">(!</span>
+                <span className="text-orange-300">context</span>
+                <span className="text-gray-300">) </span>
+                <span className="text-purple-400">throw new </span>
+                <span className="text-yellow-300">Error</span>
+                <span className="text-gray-300">(</span>
+                <span className="text-green-400">
+                  &apos;useTheme must be within ThemeProvider&apos;
+                </span>
+                <span className="text-gray-300">);</span>
               </p>
               <p className="pl-4">
                 <span className="text-purple-400">return </span>
-                <span className="text-gray-500">&lt;</span><span className="text-yellow-300">button</span>
-                <span className="text-orange-300"> onClick</span><span className="text-gray-300">={'{'}</span><span className="text-blue-300">toggle</span><span className="text-gray-300">{'}'}</span><span className="text-gray-500">&gt;</span>
-                <span className="text-gray-300">Theme: {'{'}</span><span className="text-blue-300">theme</span><span className="text-gray-300">{'}'}</span>
-                <span className="text-gray-500">&lt;/</span><span className="text-yellow-300">button</span><span className="text-gray-500">&gt;</span><span className="text-gray-300">;</span>
+                <span className="text-orange-300">context</span>
+                <span className="text-gray-300">;</span>
               </p>
-              <p><span className="text-gray-300">{'}'}</span></p>
+              <p>
+                <span className="text-gray-300">{'}'}</span>
+              </p>
+
+              <p className="mt-3">
+                <span className="text-gray-500">
+                  {'// 4. Use in any component'}
+                </span>
+              </p>
+              <p>
+                <span className="text-purple-400">function </span>
+                <span className="text-yellow-300">Button</span>
+                <span className="text-gray-300">() {'{'}</span>
+              </p>
+              <p className="pl-4">
+                <span className="text-purple-400">const </span>
+                <span className="text-gray-300">{'{ '}</span>
+                <span className="text-orange-300">theme</span>
+                <span className="text-gray-300">, </span>
+                <span className="text-orange-300">toggle</span>
+                <span className="text-gray-300">{' }'} = </span>
+                <span className="text-yellow-300">useTheme</span>
+                <span className="text-gray-300">();</span>
+              </p>
+              <p className="pl-4">
+                <span className="text-purple-400">return </span>
+                <span className="text-gray-500">&lt;</span>
+                <span className="text-yellow-300">button</span>
+                <span className="text-orange-300"> onClick</span>
+                <span className="text-gray-300">={'{'}</span>
+                <span className="text-blue-300">toggle</span>
+                <span className="text-gray-300">{'}'}</span>
+                <span className="text-gray-500">&gt;</span>
+                <span className="text-gray-300">Theme: {'{'}</span>
+                <span className="text-blue-300">theme</span>
+                <span className="text-gray-300">{'}'}</span>
+                <span className="text-gray-500">&lt;/</span>
+                <span className="text-yellow-300">button</span>
+                <span className="text-gray-500">&gt;</span>
+                <span className="text-gray-300">;</span>
+              </p>
+              <p>
+                <span className="text-gray-300">{'}'}</span>
+              </p>
             </div>
           </div>
 
