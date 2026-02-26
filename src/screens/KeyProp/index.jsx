@@ -108,7 +108,9 @@ function IndexKeyDemo() {
               <Hash className="w-2.5 h-2.5" />
               key={index}
             </span>
-            <span className="text-gray-300 text-xs w-20 shrink-0">{user.name}</span>
+            <span className="text-gray-300 text-xs w-20 shrink-0">
+              {user.name}
+            </span>
             <input
               type="text"
               placeholder="Type here..."
@@ -187,7 +189,9 @@ function UniqueKeyDemo() {
               <Database className="w-2.5 h-2.5 shrink-0" />
               {user.id.slice(-8)}
             </span>
-            <span className="text-gray-300 text-xs w-20 shrink-0">{user.name}</span>
+            <span className="text-gray-300 text-xs w-20 shrink-0">
+              {user.name}
+            </span>
             <input
               type="text"
               placeholder="Type here..."
@@ -498,12 +502,13 @@ export default function KeyPropScreen() {
 
         {/* ── Side-by-side dark panels ── */}
         <div className="flex flex-col lg:flex-row gap-6 mb-8">
-
           {/* Panel 1 — BAD: index as key */}
           <div className="flex-1 bg-gray-900 rounded-xl overflow-hidden border-2 border-red-500">
             <div className="flex items-center gap-2 px-4 py-3 bg-red-500">
               <XCircle className="w-4 h-4 text-white" />
-              <span className="text-white font-bold text-sm">Bad — Using Array Index as Key</span>
+              <span className="text-white font-bold text-sm">
+                Bad — Using Array Index as Key
+              </span>
             </div>
 
             {/* Live demo */}
@@ -514,7 +519,9 @@ export default function KeyPropScreen() {
 
             {/* Code snippet */}
             <div className="p-4 font-mono text-xs leading-relaxed overflow-x-auto">
-              <p className="text-gray-500 mb-2">{'// ❌ index changes position when list is reordered'}</p>
+              <p className="text-gray-500 mb-2">
+                {'// ❌ index changes position when list is reordered'}
+              </p>
               <p>
                 <span className="text-gray-300">{'{'}</span>
                 <span className="text-white">users</span>
@@ -533,9 +540,13 @@ export default function KeyPropScreen() {
               <p className="pl-8">
                 <span className="text-yellow-200">key</span>
                 <span className="text-gray-300">={'{'}</span>
-                <span className="bg-red-500/20 border border-red-500/40 rounded px-1 text-red-300">index</span>
+                <span className="bg-red-500/20 border border-red-500/40 rounded px-1 text-red-300">
+                  index
+                </span>
                 <span className="text-gray-300">{'}'}</span>
-                <span className="text-gray-500 ml-2">{'// ❌ position-based'}</span>
+                <span className="text-gray-500 ml-2">
+                  {'// ❌ position-based'}
+                </span>
               </p>
               <p className="pl-4 text-gray-300">&gt;</p>
               <p className="pl-8 text-gray-300">...</p>
@@ -549,9 +560,11 @@ export default function KeyPropScreen() {
               <p className="mt-4 text-red-400 text-xs flex items-start gap-1.5">
                 <span className="shrink-0">⚠</span>
                 <span>
-                  After a shuffle, <span className="text-red-300 font-semibold">key=0</span> now
-                  points to a different item. React reuses the old DOM node — typed
-                  text stays at position 0 instead of moving with its item.
+                  After a shuffle,{' '}
+                  <span className="text-red-300 font-semibold">key=0</span> now
+                  points to a different item. React reuses the old DOM node —
+                  typed text stays at position 0 instead of moving with its
+                  item.
                 </span>
               </p>
             </div>
@@ -561,7 +574,9 @@ export default function KeyPropScreen() {
           <div className="flex-1 bg-gray-900 rounded-xl overflow-hidden border-2 border-green-500">
             <div className="flex items-center gap-2 px-4 py-3 bg-green-500">
               <CheckCircle className="w-4 h-4 text-white" />
-              <span className="text-white font-bold text-sm">Good — Using a Stable Unique ID as Key</span>
+              <span className="text-white font-bold text-sm">
+                Good — Using a Stable Unique ID as Key
+              </span>
             </div>
 
             {/* Live demo */}
@@ -572,7 +587,9 @@ export default function KeyPropScreen() {
 
             {/* Code snippet */}
             <div className="p-4 font-mono text-xs leading-relaxed overflow-x-auto">
-              <p className="text-gray-500 mb-2">{'// ✅ ID is tied to the data, not its position'}</p>
+              <p className="text-gray-500 mb-2">
+                {'// ✅ ID is tied to the data, not its position'}
+              </p>
               <p>
                 <span className="text-gray-300">{'{'}</span>
                 <span className="text-white">users</span>
@@ -589,9 +606,13 @@ export default function KeyPropScreen() {
               <p className="pl-8">
                 <span className="text-yellow-200">key</span>
                 <span className="text-gray-300">={'{'}</span>
-                <span className="bg-green-500/20 border border-green-500/40 rounded px-1 text-green-300">user.id</span>
+                <span className="bg-green-500/20 border border-green-500/40 rounded px-1 text-green-300">
+                  user.id
+                </span>
                 <span className="text-gray-300">{'}'}</span>
-                <span className="text-gray-500 ml-2">{'// ✅ stable unique ID'}</span>
+                <span className="text-gray-500 ml-2">
+                  {'// ✅ stable unique ID'}
+                </span>
               </p>
               <p className="pl-4 text-gray-300">&gt;</p>
               <p className="pl-8 text-gray-300">...</p>
@@ -605,9 +626,10 @@ export default function KeyPropScreen() {
               <p className="mt-4 text-green-400 text-xs flex items-start gap-1.5">
                 <span className="shrink-0">✓</span>
                 <span>
-                  After a shuffle, React matches each <span className="text-green-300 font-semibold">key</span> to
-                  the same component instance. Typed text moves with its item — state
-                  is perfectly preserved regardless of list order.
+                  After a shuffle, React matches each{' '}
+                  <span className="text-green-300 font-semibold">key</span> to
+                  the same component instance. Typed text moves with its item —
+                  state is perfectly preserved regardless of list order.
                 </span>
               </p>
             </div>
